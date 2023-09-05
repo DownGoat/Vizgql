@@ -1,0 +1,22 @@
+﻿@page "/"
+@using SchemaExplorer.ReportBuilder
+
+<PageTitle>Index</PageTitle>
+
+<div class="schema-container">
+    @foreach (var rootType in ParseSchema())
+    {
+        <RootTypeComponent RootType="@rootType"/>
+    }
+</div>
+
+@code {
+
+    public RootType[] ParseSchema()
+    {
+        var sdlContent = File.ReadAllText("schema.graphql");
+        var sp = new SchemaParser();
+        return sp.Parse(sdlContent);
+    }
+
+}

@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400&display=swap');
+
+html {
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #0D0F31;
+    color: white;
+}
+
+.schema-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resolvers-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.resolver {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.directives {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 50%;
+}
+
+.directive-item {
+    color: #ff16b08c;
+}
+
+.resolver-name {
+    color: #46BDFF;
+    width: 50%;
+}
