@@ -5,7 +5,7 @@ namespace SchemaExplorer.NUnit;
 
 public static class SchemaAuthorization
 {
-    public static void Validate(string sdl, ValidationOptions validationOptions)
+    public static void AssertValidate(string sdl, ValidationOptions validationOptions)
     {
         var parser = new SchemaParser();
 
@@ -14,6 +14,21 @@ public static class SchemaAuthorization
         foreach (var rootType in results)
         {
             AssertRootTypeAuthorization(rootType, validationOptions);
+        }
+    }
+    
+    public static IEnumerable<ValidationAssertion> Validate(string sdl)
+    {
+        var parser = new SchemaParser();
+
+        var results = parser.Parse(sdl);
+
+        foreach (var rootType in results)
+        {
+            foreach (var validationAssertion in rootType.Validate())
+            {
+                yield return validationAssertion;
+            }
         }
     }
 

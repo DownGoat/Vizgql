@@ -16,7 +16,7 @@ public sealed class SchemaAuthorizationShould
     public void ExceptionOnMissingRootTypeAuthorizationDirective()
     {
         Assert.Throws<SchemaAuthorizationMissingAuthorization>(() =>
-            SchemaAuthorization.Validate(_missingRootSdl,
+            SchemaAuthorization.AssertValidate(_missingRootSdl,
                 new ValidationOptions(AllowRootTypeWithoutAuthorization: false)));
     }
 
@@ -24,7 +24,7 @@ public sealed class SchemaAuthorizationShould
     public void ExceptionWhenRootMissingRoles()
     {
         Assert.Throws<SchemaAuthorizationMissingConstraints>(() =>
-            SchemaAuthorization.Validate(_missingRootSdl,
+            SchemaAuthorization.AssertValidate(_missingRootSdl,
                 new ValidationOptions(AllowRootTypeEmptyAuthorize: false)));
     }
 
@@ -32,7 +32,7 @@ public sealed class SchemaAuthorizationShould
     public void AllowMissingRootTypeAuthorization()
     {
         Assert.DoesNotThrow(() =>
-            SchemaAuthorization.Validate(_missingRootSdl,
+            SchemaAuthorization.AssertValidate(_missingRootSdl,
                 new ValidationOptions(AllowRootTypeWithoutAuthorization: true)));
     }
     
@@ -40,7 +40,7 @@ public sealed class SchemaAuthorizationShould
     public void ExceptionOnMissingRoleForField()
     {
         Assert.Throws<SchemaAuthorizationMissingConstraints>(() =>
-            SchemaAuthorization.Validate(_missingFieldRole,
+            SchemaAuthorization.AssertValidate(_missingFieldRole,
                 new ValidationOptions()));
     }
     
@@ -48,7 +48,14 @@ public sealed class SchemaAuthorizationShould
     public void ExceptionOnMissingFieldAuthorization()
     {
         Assert.Throws<SchemaAuthorizationMissingFieldAuthorization>(() =>
-            SchemaAuthorization.Validate(_missingFieldAuthorization,
+            SchemaAuthorization.AssertValidate(_missingFieldAuthorization,
                 new ValidationOptions()));
+    }
+    
+    [Test]
+    public void ExceptionOnMissingFieldAuthorization2()
+    {
+        var results = SchemaAuthorization.Validate(_missingFieldAuthorization).ToArray();
+        Assert.Pass();
     }
 }
