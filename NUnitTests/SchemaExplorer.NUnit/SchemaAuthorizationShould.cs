@@ -1,62 +1,54 @@
-using SchemaExplorer.ReportBuilder;
-
 namespace SchemaExplorer.NUnit.SchemaExplorer.NUnit;
 
 [TestFixture]
 public sealed class SchemaAuthorizationShould
 {
-    private readonly string _missingRootPath = Path.Combine("schemas", "missing-root-auth-directive.graphql");
+    private readonly string _missingRootSdl =
+        File.ReadAllText(Path.Combine("schemas", "missing-root-auth-directive.graphql"));
+    
+    private readonly string _missingFieldRole =
+        File.ReadAllText(Path.Combine("schemas", "missing-role-for-field.graphql"));
+    
+    private readonly string _missingFieldAuthorization =
+        File.ReadAllText(Path.Combine("schemas", "missing-field-authorization.graphql"));
 
     [Test]
     public void ExceptionOnMissingRootTypeAuthorizationDirective()
     {
-        var types = GetMissingRootTypes();
-
-        var rootType = types.First(x => x.Name == "Mutation");
-
-        Assert.Throws<SchemaAuthorizationMissingRootDirective>(() =>
-            SchemaAuthorization.AssertRootTypeAuthorization(rootType, new ValidationOptions()));
-    }
-
-    private RootType[] GetMissingRootTypes()
-    {
-        var sdl = File.ReadAllText(_missingRootPath);
-        var parser = new SchemaParser();
-        var types = parser.Parse(sdl);
-        return types;
-    }
-
-    [Test]
-    public void NotThrowExceptionOnRootAuthorized()
-    {
-        var types = GetMissingRootTypes();
-
-        var rootType = types.First(x => x.Name == "Query");
-
-        Assert.DoesNotThrow(() => SchemaAuthorization.AssertRootTypeAuthorization(rootType, new ValidationOptions()));
+        Assert.Throws<SchemaAuthorizationMissingAuthorization>(() =>
+            SchemaAuthorization.Validate(_missingRootSdl,
+                new ValidationOptions(AllowRootTypeWithoutAuthorization: false)));
     }
 
     [Test]
     public void ExceptionWhenRootMissingRoles()
     {
-        var types = GetMissingRootTypes();
-
-        var rootType = types.First(x => x.Name == "Query");
-
-        Assert.Throws<SchemaAuthorizationMissingRootRoles>(() =>
-            SchemaAuthorization.AssertRootTypeAuthorization(rootType,
+        Assert.Throws<SchemaAuthorizationMissingConstraints>(() =>
+            SchemaAuthorization.Validate(_missingRootSdl,
                 new ValidationOptions(AllowRootTypeEmptyAuthorize: false)));
     }
 
     [Test]
     public void AllowMissingRootTypeAuthorization()
     {
-        var types = GetMissingRootTypes();
-
-        var rootType = types.First(x => x.Name == "Mutation");
-
         Assert.DoesNotThrow(() =>
-            SchemaAuthorization.AssertRootTypeAuthorization(rootType,
+            SchemaAuthorization.Validate(_missingRootSdl,
                 new ValidationOptions(AllowRootTypeWithoutAuthorization: true)));
+    }
+    
+    [Test]
+    public void ExceptionOnMissingRoleForField()
+    {
+        Assert.Throws<SchemaAuthorizationMissingConstraints>(() =>
+            SchemaAuthorization.Validate(_missingFieldRole,
+                new ValidationOptions()));
+    }
+    
+    [Test]
+    public void ExceptionOnMissingFieldAuthorization()
+    {
+        Assert.Throws<SchemaAuthorizationMissingFieldAuthorization>(() =>
+            SchemaAuthorization.Validate(_missingFieldAuthorization,
+                new ValidationOptions()));
     }
 }

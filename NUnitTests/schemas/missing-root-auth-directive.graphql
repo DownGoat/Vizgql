@@ -6,11 +6,11 @@
 
 type Query @authorize {
   currentUser: User! @authorize(roles: [ "Core" ])
-  listItems: User! @authorize
+  listItems: User! @authorize(roles: [ "Core" ])
 }
 
 type Mutation {
-  currentUser: User! 
+  currentUser: User! @authorize(roles: [ "Core" ])
 }
 
 type Subscription {

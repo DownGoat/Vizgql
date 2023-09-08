@@ -26,6 +26,12 @@
       <None Update="schemas\missing-root-auth-directive.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="schemas\missing-role-for-field.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\missing-field-authorization.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
