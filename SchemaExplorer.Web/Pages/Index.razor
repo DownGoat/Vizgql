@@ -4,10 +4,7 @@
 <PageTitle>Index</PageTitle>
 
 <div class="schema-container">
-    @foreach (var rootType in ParseSchema())
-    {
-        <RootTypeComponent RootType="@rootType"/>
-    }
+    <Main Types="ParseSchema()"></Main>
 </div>
 
 @code {

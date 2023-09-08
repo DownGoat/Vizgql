@@ -59,3 +59,9 @@ body {
     color: #46BDFF;
     width: 50%;
 }
+
+.root-types {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

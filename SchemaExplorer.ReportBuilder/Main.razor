@@ -1,0 +1,11 @@
+<div class="root-types">
+    @foreach (var root in Types)
+    {
+        <RootTypeComponent RootType="root" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public RootType[] Types { get; set; }
+}
