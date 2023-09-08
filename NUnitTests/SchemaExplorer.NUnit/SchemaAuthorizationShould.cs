@@ -1,3 +1,5 @@
+using SchemaExplorer.NUnit.Exceptions;
+
 namespace SchemaExplorer.NUnit.SchemaExplorer.NUnit;
 
 [TestFixture]

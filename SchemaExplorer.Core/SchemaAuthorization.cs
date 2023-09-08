@@ -1,4 +1,5 @@
-﻿using SchemaExplorer.ReportBuilder;
+﻿using SchemaExplorer.NUnit.Exceptions;
+using SchemaExplorer.ReportBuilder;
 using static SchemaExplorer.ReportBuilder.ValidationAssertionType;
 
 namespace SchemaExplorer.NUnit;
@@ -34,14 +35,15 @@ public static class SchemaAuthorization
 
     private static void AssertRootTypeAuthorization(RootType rootType, ValidationOptions options)
     {
-        if (!options.AllowRootTypeWithoutAuthorization && !rootType.HasAuthorization)
+        var validations = rootType.Validate().ToArray();
+        if (!options.AllowRootTypeWithoutAuthorization && validations.Any(x => x.Type == MissingAuthorization))
         {
             throw new SchemaAuthorizationMissingAuthorization(rootType.Name);
         }
 
-        if (!options.AllowRootTypeEmptyAuthorize && rootType is { HasAuthorization: true, Roles.Length: 0 })
+        if (!options.AllowRootTypeEmptyAuthorize && validations.Any(x => x.Type == MissingAuthorizationConstraints))
         {
-            throw new SchemaAuthorizationMissingConstraints(rootType.Name);
+            throw new SchemaAuthorizationMissingConstraints(rootType.Name); 
         }
 
         foreach (var field in rootType.Resolvers)
@@ -70,31 +72,3 @@ public static class SchemaAuthorization
         }
     }
 }
-
-public sealed class SchemaAuthorizationMissingAuthorization : Exception
-{
-    public SchemaAuthorizationMissingAuthorization(string name)
-        : base($"The type/field '{name}' is missing a authorization directive.")
-    {
-    }
-}
-
-public sealed class SchemaAuthorizationMissingConstraints : Exception
-{
-    public SchemaAuthorizationMissingConstraints(string name)
-        : base($"The type/field '{name}' is missing constraints like roles/policies.")
-    {
-    }
-}
-
-public sealed class SchemaAuthorizationMissingFieldAuthorization : Exception
-{
-    public SchemaAuthorizationMissingFieldAuthorization(string fieldName)
-        : base($"The field '{fieldName}' is missing authorization.")
-    {
-    }
-}
-
-public sealed record ValidationOptions(
-    bool AllowRootTypeWithoutAuthorization = false,
-    bool AllowRootTypeEmptyAuthorize = true);

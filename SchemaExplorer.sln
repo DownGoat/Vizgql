@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.ReportBuilde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.Console", "SchemaExplorer.Console\SchemaExplorer.Console.csproj", "{AA6ECD28-47E7-4805-B288-AE6279659EA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.NUnit", "SchemaExplorer.NUnit\SchemaExplorer.NUnit.csproj", "{25F4BDD7-AAEE-488B-A4D8-CAFD78B62BD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.Core", "SchemaExplorer.Core\SchemaExplorer.Core.csproj", "{25F4BDD7-AAEE-488B-A4D8-CAFD78B62BD7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9AB81E6-1626-4B51-A4C7-69E605CECA57}"
 EndProject
