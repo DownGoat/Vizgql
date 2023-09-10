@@ -1,7 +1,7 @@
 ﻿using GraphQLParser;
 using GraphQLParser.AST;
 
-namespace SchemaExplorer.ReportBuilder;
+namespace SchemaExplorer.Core;
 
 public class SchemaParser
 {

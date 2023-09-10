@@ -1,6 +1,6 @@
-﻿namespace SchemaExplorer.ReportBuilder;
+﻿namespace SchemaExplorer.Core;
 
-public record RootType(string Name, bool HasAuthorization, string[] Roles, FieldType[] Resolvers)
+public record RootType(string Name, bool HasAuthorization, string[] Roles, FieldType[] Fields)
 {
     public IEnumerable<ValidationAssertion> Validate()
     {
@@ -13,14 +13,6 @@ public record RootType(string Name, bool HasAuthorization, string[] Roles, Field
         {
             yield return new ValidationAssertion(Name, ValidationAssertionType.MissingAuthorizationConstraints);
         }
-
-        // foreach (var field in Resolvers)
-        // {
-        //     foreach (var fieldAssertion in field.Validate(this))
-        //     {
-        //         yield return fieldAssertion;
-        //     }
-        // }
     }
 }
 public record FieldType(string Name, bool HasAuthorization, string[] Roles)

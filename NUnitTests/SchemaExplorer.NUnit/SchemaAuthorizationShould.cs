@@ -1,4 +1,5 @@
-using SchemaExplorer.NUnit.Exceptions;
+using SchemaExplorer.Core;
+using SchemaExplorer.Core.Exceptions;
 
 namespace SchemaExplorer.NUnit.SchemaExplorer.NUnit;
 

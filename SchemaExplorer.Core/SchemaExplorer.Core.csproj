@@ -8,17 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="GraphQL-Parser" Version="9.2.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\SchemaExplorer.ReportBuilder\SchemaExplorer.ReportBuilder.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\SchemaExplorer.ReportBuilder\SchemaExplorer.ReportBuilder.csproj" />
-    </ItemGroup>
-
-
 
 </Project>

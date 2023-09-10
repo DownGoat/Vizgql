@@ -1,4 +1,5 @@
-﻿<div class="root-type-container">
+﻿@using SchemaExplorer.Core
+<div class="root-type-container">
     <h2>@RootType.Name</h2>
     <p>Root type directives:</p>
     <div class="directives">
@@ -8,9 +9,9 @@
         }
     </div>
 
-    <h3>Resolvers</h3>
+    <h3>Fields</h3>
     <div class="resolvers-container">
-        @foreach (var resolver in RootType.Resolvers)
+        @foreach (var resolver in RootType.Fields)
         {
             <div class="resolver">
                 <div class="resolver-name">@resolver.Name</div>

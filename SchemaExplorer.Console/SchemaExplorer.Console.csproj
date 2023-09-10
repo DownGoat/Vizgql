@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SchemaExplorer.Core\SchemaExplorer.Core.csproj" />
       <ProjectReference Include="..\SchemaExplorer.ReportBuilder\SchemaExplorer.ReportBuilder.csproj" />
     </ItemGroup>
 

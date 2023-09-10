@@ -1,8 +1,8 @@
-﻿using SchemaExplorer.NUnit.Exceptions;
-using SchemaExplorer.ReportBuilder;
-using static SchemaExplorer.ReportBuilder.ValidationAssertionType;
+﻿using SchemaExplorer.Core.Exceptions;
+using SchemaExplorer.NUnit;
+using static SchemaExplorer.Core.ValidationAssertionType;
 
-namespace SchemaExplorer.NUnit;
+namespace SchemaExplorer.Core;
 
 public static class SchemaAuthorization
 {
@@ -46,7 +46,7 @@ public static class SchemaAuthorization
             throw new SchemaAuthorizationMissingConstraints(rootType.Name); 
         }
 
-        foreach (var field in rootType.Resolvers)
+        foreach (var field in rootType.Fields)
         {
             AssertFieldAuthorization(field, rootType);
         }

@@ -1,4 +1,4 @@
-﻿namespace SchemaExplorer.NUnit.Exceptions;
+﻿namespace SchemaExplorer.Core.Exceptions;
 
 public sealed class SchemaAuthorizationMissingAuthorization : Exception
 {
