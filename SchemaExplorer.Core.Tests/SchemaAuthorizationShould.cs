@@ -1,4 +1,5 @@
 using SchemaExplorer.Core.Exceptions;
+using SchemaExplorer.Core.Types;
 
 namespace SchemaExplorer.Core.Tests;
 

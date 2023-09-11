@@ -1,5 +1,6 @@
 ﻿using GraphQLParser;
 using GraphQLParser.AST;
+using SchemaExplorer.Core.Types;
 
 namespace SchemaExplorer.Core;
 

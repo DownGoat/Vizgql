@@ -1,5 +1,6 @@
 ﻿using SchemaExplorer.Core.Exceptions;
-using static SchemaExplorer.Core.ValidationAssertionType;
+using SchemaExplorer.Core.Types;
+using static SchemaExplorer.Core.Types.ValidationAssertionType;
 
 namespace SchemaExplorer.Core;
 
