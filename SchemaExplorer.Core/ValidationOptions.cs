@@ -1,4 +1,4 @@
-﻿namespace SchemaExplorer.NUnit;
+﻿namespace SchemaExplorer.Core;
 
 public sealed record ValidationOptions(
     bool AllowRootTypeWithoutAuthorization = false,

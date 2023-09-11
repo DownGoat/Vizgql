@@ -1,5 +1,4 @@
 ﻿using SchemaExplorer.Core.Exceptions;
-using SchemaExplorer.NUnit;
 using static SchemaExplorer.Core.ValidationAssertionType;
 
 namespace SchemaExplorer.Core;
