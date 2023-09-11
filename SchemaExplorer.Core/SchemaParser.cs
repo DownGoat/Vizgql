@@ -11,8 +11,8 @@ public class SchemaParser
 
         var rootTypes = new List<RootType>();
 
-        var schemaDefinition = (GraphQLSchemaDefinition)document.Definitions
-            .First(x => x.Kind == ASTNodeKind.SchemaDefinition);
+        var schemaDefinition = (GraphQLSchemaDefinition)
+            document.Definitions.First(x => x.Kind == ASTNodeKind.SchemaDefinition);
 
         var rootTypeNames = schemaDefinition.OperationTypes
             .Select(x => x.Type?.Name.Value.ToString())
@@ -21,8 +21,10 @@ public class SchemaParser
 
         foreach (var definition in document.Definitions)
         {
-            if (definition is GraphQLObjectTypeDefinition typeDefinition &&
-                rootTypeNames.Contains(typeDefinition.Name.Value.ToString()))
+            if (
+                definition is GraphQLObjectTypeDefinition typeDefinition
+                && rootTypeNames.Contains(typeDefinition.Name.Value.ToString())
+            )
             {
                 var rootType = ParseRootType(typeDefinition);
                 rootTypes.Add(rootType);
@@ -44,16 +46,20 @@ public class SchemaParser
             var fieldType = new FieldType(
                 field.Name.Value.ToString(),
                 HasAuthorizeDirective(field),
-                GetRoles(field));
+                GetRoles(field)
+            );
 
             resolvers.Add(fieldType);
         }
 
-        resolvers = resolvers
-            .OrderBy(x => x.Name)
-            .ToList();
-        
-        return new RootType(typeDefinition.Name.Value.ToString(), hasAuthorization, roles, resolvers.ToArray());
+        resolvers = resolvers.OrderBy(x => x.Name).ToList();
+
+        return new RootType(
+            typeDefinition.Name.Value.ToString(),
+            hasAuthorization,
+            roles,
+            resolvers.ToArray()
+        );
     }
 
     private bool HasAuthorizeDirective(GraphQLObjectTypeDefinition typeDefinition)

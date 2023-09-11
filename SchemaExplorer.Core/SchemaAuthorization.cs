@@ -16,33 +16,44 @@ public static class SchemaAuthorization
             AssertRootTypeAuthorization(rootType, validationOptions);
         }
     }
-    
+
     public static IEnumerable<ValidationAssertion> Validate(string sdl)
     {
         var parser = new SchemaParser();
 
         var results = parser.Parse(sdl);
 
+        var validations = new List<ValidationAssertion>();
+
         foreach (var rootType in results)
         {
-            foreach (var validationAssertion in rootType.Validate())
+            validations.AddRange(rootType.Validate());
+            foreach (var field in rootType.Fields)
             {
-                yield return validationAssertion;
+                validations.AddRange(field.Validate(rootType));
             }
         }
+
+        return validations;
     }
 
     private static void AssertRootTypeAuthorization(RootType rootType, ValidationOptions options)
     {
         var validations = rootType.Validate().ToArray();
-        if (!options.AllowRootTypeWithoutAuthorization && validations.Any(x => x.Type == MissingAuthorization))
+        if (
+            !options.AllowRootTypeWithoutAuthorization
+            && validations.Any(x => x.Type == MissingAuthorization)
+        )
         {
             throw new SchemaAuthorizationMissingAuthorization(rootType.Name);
         }
 
-        if (!options.AllowRootTypeEmptyAuthorize && validations.Any(x => x.Type == MissingAuthorizationConstraints))
+        if (
+            !options.AllowRootTypeEmptyAuthorize
+            && validations.Any(x => x.Type == MissingAuthorizationConstraints)
+        )
         {
-            throw new SchemaAuthorizationMissingConstraints(rootType.Name); 
+            throw new SchemaAuthorizationMissingConstraints(rootType.Name);
         }
 
         foreach (var field in rootType.Fields)
@@ -62,12 +73,14 @@ public static class SchemaAuthorization
 
         if (validations.Any(x => x.Type == MissingAuthorizationConstraints))
         {
-          throw new SchemaAuthorizationMissingConstraints($"{rootType.Name} => {field.Name}"); 
+            throw new SchemaAuthorizationMissingConstraints($"{rootType.Name} => {field.Name}");
         }
 
         if (validations.Any(x => x.Type == MissingFieldAuthorization))
         {
-            throw new SchemaAuthorizationMissingFieldAuthorization($"{rootType.Name} => {field.Name}"); 
+            throw new SchemaAuthorizationMissingFieldAuthorization(
+                $"{rootType.Name} => {field.Name}"
+            );
         }
     }
 }
