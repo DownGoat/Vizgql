@@ -21,7 +21,6 @@ public record SchemaType(RootType[] RootTypes)
     }
 }
 
-
 public record RootType(string Name, bool HasAuthorization, string[] Roles, FieldType[] Fields)
 {
     public IEnumerable<ValidationAssertion> Validate()

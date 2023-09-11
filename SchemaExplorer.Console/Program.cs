@@ -5,4 +5,7 @@ using SchemaExplorer.Core;
 var sdlContent = File.ReadAllText("cow.graphql");
 var sp = new SchemaParser();
 
-var rootTypes = sp.Parse(sdlContent);
+var schemaType = sp.Parse(sdlContent);
+var validations = schemaType.Validate();
+
+Console.WriteLine("asd");

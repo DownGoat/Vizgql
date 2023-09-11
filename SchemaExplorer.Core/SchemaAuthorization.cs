@@ -58,29 +58,32 @@ public static class SchemaAuthorization
 
         foreach (var field in rootType.Fields)
         {
-            AssertFieldAuthorization(field, rootType);
+            AssertFieldAuthorization(field, rootType, options);
         }
     }
 
-    private static void AssertFieldAuthorization(FieldType field, RootType rootType)
+    private static void AssertFieldAuthorization(
+        FieldType field,
+        RootType rootType,
+        ValidationOptions options
+    )
     {
         var validations = field.Validate(rootType).ToArray();
+        var fieldName = $"{rootType.Name} => {field.Name}";
 
-        if (validations.Any(x => x.Type == MissingAuthorization))
+        if (FieldAuthorizationRules.MissingAuthorizationDirective(validations))
         {
-            throw new SchemaAuthorizationMissingAuthorization($"{rootType.Name} => {field.Name}");
+            throw new SchemaAuthorizationMissingAuthorization(fieldName);
         }
 
-        if (validations.Any(x => x.Type == MissingAuthorizationConstraints))
+        if (FieldAuthorizationRules.MissingConstraints(validations))
         {
-            throw new SchemaAuthorizationMissingConstraints($"{rootType.Name} => {field.Name}");
+            throw new SchemaAuthorizationMissingConstraints(fieldName);
         }
 
-        if (validations.Any(x => x.Type == MissingFieldAuthorization))
+        if (FieldAuthorizationRules.FieldMissingAuthorization(validations, options))
         {
-            throw new SchemaAuthorizationMissingFieldAuthorization(
-                $"{rootType.Name} => {field.Name}"
-            );
+            throw new SchemaAuthorizationMissingFieldAuthorization(fieldName);
         }
     }
 }

@@ -17,6 +17,10 @@ public sealed class SchemaAuthorizationShould
         Path.Combine("schemas", "missing-field-authorization.graphql")
     );
 
+    private readonly string _missingFieldAuthorizationRootHasConstraint = File.ReadAllText(
+        Path.Combine("schemas", "missing-field-authorization-root-has-constraints.graphql")
+    );
+
     [Test]
     public void ExceptionOnMissingRootTypeAuthorizationDirective()
     {
@@ -74,9 +78,14 @@ public sealed class SchemaAuthorizationShould
     }
 
     [Test]
-    public void ExceptionOnMissingFieldAuthorization2()
+    public void AllowMissingFieldAuthorization()
     {
-        var results = SchemaAuthorization.Validate(_missingFieldAuthorization).ToArray();
-        Assert.Pass();
+        Assert.DoesNotThrow(
+            () =>
+                SchemaAuthorization.AssertValidate(
+                    _missingFieldAuthorizationRootHasConstraint,
+                    new ValidationOptions(AllowFieldWithoutAuthorization: true)
+                )
+        );
     }
 }

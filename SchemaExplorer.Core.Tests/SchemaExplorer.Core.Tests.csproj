@@ -31,6 +31,9 @@
       <None Update="schemas\missing-root-auth-directive.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="schemas\missing-field-authorization-root-has-constraints.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
