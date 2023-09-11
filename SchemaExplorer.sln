@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.Core", "Sche
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9AB81E6-1626-4B51-A4C7-69E605CECA57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTests", "NUnitTests\NUnitTests.csproj", "{C10043B3-7301-4A01-B1D0-A766616A3719}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaExplorer.Core.Tests", "SchemaExplorer.Core.Tests\SchemaExplorer.Core.Tests.csproj", "{8255E113-35A8-4BB9-8CE3-4A58AA463343}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,12 +34,12 @@ Global
 		{25F4BDD7-AAEE-488B-A4D8-CAFD78B62BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25F4BDD7-AAEE-488B-A4D8-CAFD78B62BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25F4BDD7-AAEE-488B-A4D8-CAFD78B62BD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C10043B3-7301-4A01-B1D0-A766616A3719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C10043B3-7301-4A01-B1D0-A766616A3719}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C10043B3-7301-4A01-B1D0-A766616A3719}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C10043B3-7301-4A01-B1D0-A766616A3719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C10043B3-7301-4A01-B1D0-A766616A3719} = {B9AB81E6-1626-4B51-A4C7-69E605CECA57}
+		{8255E113-35A8-4BB9-8CE3-4A58AA463343} = {B9AB81E6-1626-4B51-A4C7-69E605CECA57}
 	EndGlobalSection
 EndGlobal

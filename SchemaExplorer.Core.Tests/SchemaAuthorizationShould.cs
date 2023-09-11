@@ -1,7 +1,6 @@
-using SchemaExplorer.Core;
 using SchemaExplorer.Core.Exceptions;
 
-namespace SchemaExplorer.NUnit.SchemaExplorer.NUnit;
+namespace SchemaExplorer.Core.Tests;
 
 [TestFixture]
 public sealed class SchemaAuthorizationShould
