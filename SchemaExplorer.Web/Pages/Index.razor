@@ -10,7 +10,7 @@
 
 @code {
 
-    public RootType[] ParseSchema()
+    public SchemaType ParseSchema()
     {
         var sdlContent = File.ReadAllText("schema.graphql");
         var sp = new SchemaParser();

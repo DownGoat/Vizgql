@@ -5,7 +5,7 @@ namespace SchemaExplorer.Core;
 
 public class SchemaParser
 {
-    public RootType[] Parse(string schema)
+    public SchemaType Parse(string schema)
     {
         var document = Parser.Parse(schema);
 
@@ -31,7 +31,7 @@ public class SchemaParser
             }
         }
 
-        return rootTypes.ToArray();
+        return new SchemaType(rootTypes.ToArray());
     }
 
     private RootType ParseRootType(GraphQLObjectTypeDefinition typeDefinition)

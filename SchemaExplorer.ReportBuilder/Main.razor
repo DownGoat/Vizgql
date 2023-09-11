@@ -1,6 +1,6 @@
 @using SchemaExplorer.Core
 <div class="root-types">
-    @foreach (var root in Types)
+    @foreach (var root in Schema.RootTypes)
     {
         <RootTypeComponent RootType="root" />
     }
@@ -8,5 +8,5 @@
 
 @code {
     [Parameter]
-    public RootType[] Types { get; set; }
+    public SchemaType Schema { get; set; }
 }

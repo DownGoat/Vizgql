@@ -5,4 +5,4 @@ using SchemaExplorer.Core;
 var sdlContent = File.ReadAllText("cow.graphql");
 var sp = new SchemaParser();
 
-sp.Parse(sdlContent);
+var rootTypes = sp.Parse(sdlContent);

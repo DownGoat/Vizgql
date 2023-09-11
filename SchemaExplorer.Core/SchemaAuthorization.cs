@@ -9,9 +9,9 @@ public static class SchemaAuthorization
     {
         var parser = new SchemaParser();
 
-        var results = parser.Parse(sdl);
+        var schemaType = parser.Parse(sdl);
 
-        foreach (var rootType in results)
+        foreach (var rootType in schemaType.RootTypes)
         {
             AssertRootTypeAuthorization(rootType, validationOptions);
         }
@@ -21,11 +21,11 @@ public static class SchemaAuthorization
     {
         var parser = new SchemaParser();
 
-        var results = parser.Parse(sdl);
+        var schemaType = parser.Parse(sdl);
 
         var validations = new List<ValidationAssertion>();
 
-        foreach (var rootType in results)
+        foreach (var rootType in schemaType.RootTypes)
         {
             validations.AddRange(rootType.Validate());
             foreach (var field in rootType.Fields)
