@@ -6,6 +6,9 @@ namespace SchemaExplorer.Core;
 
 public class SchemaParser
 {
+    private const string AuthorizeDirectiveName = "authorize";
+    private const string RolesArgumentName = "roles";
+
     public SchemaType Parse(string schema)
     {
         var document = Parser.Parse(schema);
@@ -17,14 +20,14 @@ public class SchemaParser
 
         var rootTypeNames = schemaDefinition.OperationTypes
             .Select(x => x.Type?.Name.Value.ToString())
-            .Where(x => !string.IsNullOrEmpty(x))
+            .Where(x => !string.IsNullOrEmpty(x))!
             .ToList<string>();
 
         foreach (var definition in document.Definitions)
         {
             if (
                 definition is GraphQLObjectTypeDefinition typeDefinition
-                && rootTypeNames.Contains(typeDefinition.Name.Value.ToString())
+                && IsDefinitionRootType(rootTypeNames, typeDefinition)
             )
             {
                 var rootType = ParseRootType(typeDefinition);
@@ -35,23 +38,39 @@ public class SchemaParser
         return new SchemaType(rootTypes.ToArray());
     }
 
-    private RootType ParseRootType(GraphQLObjectTypeDefinition typeDefinition)
+    private static bool IsDefinitionRootType(
+        ICollection<string> rootTypeNames,
+        INamedNode typeDefinition
+    )
     {
-        bool hasAuthorization = HasAuthorizeDirective(typeDefinition);
-        string[] roles = GetRoles(typeDefinition);
+        return rootTypeNames.Contains(typeDefinition.Name.Value.ToString());
+    }
+
+    private static RootType ParseRootType(GraphQLObjectTypeDefinition typeDefinition)
+    {
+        var hasAuthorization = HasAuthorizeDirective(typeDefinition);
+        var roles = GetRoles(typeDefinition);
 
         var resolvers = new List<FieldType>();
 
-        foreach (var field in typeDefinition.Fields)
-        {
-            var fieldType = new FieldType(
-                field.Name.Value.ToString(),
-                HasAuthorizeDirective(field),
-                GetRoles(field)
+        if (typeDefinition.Fields is null)
+            return new RootType(
+                typeDefinition.Name.Value.ToString(),
+                hasAuthorization,
+                roles,
+                resolvers.ToArray()
             );
 
-            resolvers.Add(fieldType);
-        }
+        resolvers.AddRange(
+            typeDefinition.Fields.Select(
+                field =>
+                    new FieldType(
+                        field.Name.Value.ToString(),
+                        HasAuthorizeDirective(field),
+                        GetRoles(field)
+                    )
+            )
+        );
 
         resolvers = resolvers.OrderBy(x => x.Name).ToList();
 
@@ -63,67 +82,71 @@ public class SchemaParser
         );
     }
 
-    private bool HasAuthorizeDirective(GraphQLObjectTypeDefinition typeDefinition)
+    private static bool HasAuthorizeDirective(GraphQLObjectTypeDefinition typeDefinition)
     {
-        return typeDefinition.Directives?.Any(d => d.Name.Value == "authorize") ?? false;
+        return typeDefinition.Directives?.Any(d => d.Name.Value == AuthorizeDirectiveName) ?? false;
     }
 
-    private bool HasAuthorizeDirective(GraphQLFieldDefinition fieldDefinition)
+    private static bool HasAuthorizeDirective(IHasDirectivesNode fieldDefinition)
     {
-        return fieldDefinition.Directives?.Any(d => d.Name.Value == "authorize") ?? false;
+        return fieldDefinition.Directives?.Any(d => d.Name.Value == AuthorizeDirectiveName)
+            ?? false;
     }
 
-    private string[] GetRoles(GraphQLObjectTypeDefinition typeDefinition)
+    private static string[] GetRoles(GraphQLObjectTypeDefinition typeDefinition)
     {
-        var directive = typeDefinition.Directives?.First(d => d.Name.Value == "authorize");
+        var directive = typeDefinition.Directives?.First(
+            d => d.Name.Value == AuthorizeDirectiveName
+        );
 
         if (directive?.Arguments is null)
             return Array.Empty<string>();
 
         foreach (var arg in directive.Arguments)
         {
-            if (arg.Name.Value == "roles")
+            if (arg.Name.Value != RolesArgumentName)
+                continue;
+            var values = ((GraphQLListValue)arg.Value).Values;
+            var roles = new List<string>();
+
+            foreach (var value in values)
             {
-                var values = ((GraphQLListValue)arg.Value).Values;
-                var roles = new List<string>();
-
-                foreach (var value in values)
+                if (value is GraphQLStringValue v)
                 {
-                    if (value is GraphQLStringValue v)
-                    {
-                        roles.Add(v.Value.ToString());
-                    }
+                    roles.Add(v.Value.ToString());
                 }
-
-                return roles.ToArray();
             }
+
+            return roles.ToArray();
         }
 
         return Array.Empty<string>();
     }
 
-    private string[] GetRoles(GraphQLFieldDefinition fieldDefinition)
+    private static string[] GetRoles(IHasDirectivesNode fieldDefinition)
     {
-        var directive = fieldDefinition.Directives?.First(d => d.Name.Value == "authorize");
+        var directive = fieldDefinition.Directives?.First(
+            d => d.Name.Value == AuthorizeDirectiveName
+        );
         if (directive?.Arguments is null)
             return Array.Empty<string>();
+
         foreach (var arg in directive.Arguments)
         {
-            if (arg.Name.Value == "roles")
+            if (arg.Name.Value != RolesArgumentName)
+                continue;
+            var values = ((GraphQLListValue)arg.Value).Values;
+            var roles = new List<string>();
+
+            foreach (var value in values)
             {
-                var values = ((GraphQLListValue)arg.Value).Values;
-                var roles = new List<string>();
-
-                foreach (var value in values)
+                if (value is GraphQLStringValue v)
                 {
-                    if (value is GraphQLStringValue v)
-                    {
-                        roles.Add(v.Value.ToString());
-                    }
+                    roles.Add(v.Value.ToString());
                 }
-
-                return roles.ToArray();
             }
+
+            return roles.ToArray();
         }
 
         return Array.Empty<string>();
