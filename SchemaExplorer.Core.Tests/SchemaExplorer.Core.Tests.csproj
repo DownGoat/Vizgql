@@ -34,6 +34,9 @@
       <None Update="schemas\missing-field-authorization-root-has-constraints.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="schemas\no-authorization.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

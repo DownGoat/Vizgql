@@ -6,6 +6,8 @@ namespace SchemaExplorer.Core;
 
 public static class SchemaAuthorization
 {
+    public static void AssertValidate(string sdl) => AssertValidate(sdl, new ValidationOptions());
+
     public static void AssertValidate(string sdl, ValidationOptions validationOptions)
     {
         var parser = new SchemaParser();
@@ -46,7 +48,7 @@ public static class SchemaAuthorization
             && validations.Any(x => x.Type == MissingAuthorization)
         )
         {
-            throw new SchemaAuthorizationMissingAuthorization(rootType.Name);
+            throw new MissingAuthorizationDirectiveException(rootType.Name);
         }
 
         if (
@@ -54,7 +56,7 @@ public static class SchemaAuthorization
             && validations.Any(x => x.Type == MissingAuthorizationConstraints)
         )
         {
-            throw new SchemaAuthorizationMissingConstraints(rootType.Name);
+            throw new MissingAuthorizationConstraintsException(rootType.Name);
         }
 
         foreach (var field in rootType.Fields)
@@ -74,17 +76,17 @@ public static class SchemaAuthorization
 
         if (FieldAuthorizationRules.MissingAuthorizationDirective(validations))
         {
-            throw new SchemaAuthorizationMissingAuthorization(fieldName);
+            throw new MissingAuthorizationDirectiveException(fieldName);
         }
 
         if (FieldAuthorizationRules.MissingConstraints(validations))
         {
-            throw new SchemaAuthorizationMissingConstraints(fieldName);
+            throw new MissingAuthorizationConstraintsException(fieldName);
         }
 
         if (FieldAuthorizationRules.FieldMissingAuthorization(validations, options))
         {
-            throw new SchemaAuthorizationMissingFieldAuthorization(fieldName);
+            throw new FieldMissingAuthorizationDirectiveException(fieldName);
         }
     }
 }
