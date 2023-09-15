@@ -2,6 +2,25 @@
 
 public sealed class MissingAuthorizationDirectiveException : Exception
 {
-    public MissingAuthorizationDirectiveException(string name)
-        : base($"The type/field '{name}' is missing a authorization directive.") { }
+    public MissingAuthorizationDirectiveException(string rootName)
+        : base(
+            $"""
+
+             The root type {rootName} is missing authorization directive
+             {rootName} -@authorize
+
+             """
+        ) { }
+
+    public MissingAuthorizationDirectiveException(string rootName, string fieldName)
+        : base(
+            $"""
+
+             The {rootName} field '{fieldName}' is missing authorization directive
+             {rootName}
+                 │
+                 └──── {fieldName} -@authorize
+
+             """
+        ) { }
 }

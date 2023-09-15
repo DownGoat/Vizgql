@@ -82,21 +82,20 @@ public static class SchemaAuthorization
     )
     {
         var validations = field.Validate(rootType).ToArray();
-        var fieldName = $"{rootType.Name} => {field.Name}";
 
         if (FieldAuthorizationRules.MissingAuthorizationDirective(validations))
         {
-            yield return new MissingAuthorizationDirectiveException(fieldName);
+            yield return new MissingAuthorizationDirectiveException(rootType.Name, field.Name);
         }
 
         if (FieldAuthorizationRules.MissingConstraints(validations))
         {
-            yield return new MissingAuthorizationConstraintsException(fieldName);
+            yield return new MissingAuthorizationConstraintsException(rootType.Name, field.Name);
         }
 
         if (FieldAuthorizationRules.FieldMissingAuthorization(validations, options))
         {
-            yield return new FieldMissingAuthorizationDirectiveException(fieldName);
+            yield return new FieldMissingAuthorizationDirectiveException(rootType.Name, field.Name);
         }
     }
 }
