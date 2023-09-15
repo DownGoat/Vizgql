@@ -106,9 +106,10 @@ public class SchemaParser
         {
             if (arg.Name.Value != RolesArgumentName)
                 continue;
-            
+
             var values = ((GraphQLListValue)arg.Value).Values;
-            if (values is null || values.Count == 0) continue;
+            if (values is null || values.Count == 0)
+                continue;
 
             return GetGraphQlValues(values).ToArray();
         }
@@ -132,7 +133,7 @@ public class SchemaParser
         var directive = fieldDefinition.Directives?.First(
             d => d.Name.Value == AuthorizeDirectiveName
         );
-        
+
         if (directive?.Arguments is null)
             return Array.Empty<string>();
 
@@ -140,10 +141,11 @@ public class SchemaParser
         {
             if (arg.Name.Value != RolesArgumentName)
                 continue;
-            
+
             var values = ((GraphQLListValue)arg.Value).Values;
-            if (values is null || values.Count == 0) continue;
-            
+            if (values is null || values.Count == 0)
+                continue;
+
             return GetGraphQlValues(values).ToArray();
         }
 

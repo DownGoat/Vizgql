@@ -20,7 +20,8 @@ public static class SchemaAuthorization
             exceptions.AddRange(AssertRootTypeAuthorization(rootType, validationOptions));
         }
 
-        if (exceptions.Any()) throw new AggregateException(exceptions);
+        if (exceptions.Any())
+            throw new AggregateException(exceptions);
     }
 
     public static IEnumerable<ValidationAssertion> Validate(string sdl)
@@ -43,7 +44,10 @@ public static class SchemaAuthorization
         return validations;
     }
 
-    private static List<Exception> AssertRootTypeAuthorization(RootType rootType, ValidationOptions options)
+    private static List<Exception> AssertRootTypeAuthorization(
+        RootType rootType,
+        ValidationOptions options
+    )
     {
         var validations = rootType.Validate().ToArray();
         var exceptions = new List<Exception>();
@@ -79,7 +83,6 @@ public static class SchemaAuthorization
     {
         var validations = field.Validate(rootType).ToArray();
         var fieldName = $"{rootType.Name} => {field.Name}";
-
 
         if (FieldAuthorizationRules.MissingAuthorizationDirective(validations))
         {
