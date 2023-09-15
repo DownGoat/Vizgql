@@ -15,7 +15,7 @@
     {
         var sdlContent = File.ReadAllText("schema.graphql");
         var sp = new SchemaParser();
-        return sp.Parse(sdlContent);
+        return SchemaParser.Parse(sdlContent);
     }
 
 }

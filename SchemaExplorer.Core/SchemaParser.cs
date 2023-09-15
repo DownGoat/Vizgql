@@ -9,7 +9,7 @@ public class SchemaParser
     private const string AuthorizeDirectiveName = "authorize";
     private const string RolesArgumentName = "roles";
 
-    public SchemaType Parse(string schema)
+    public static SchemaType Parse(string schema)
     {
         var document = Parser.Parse(schema);
 
@@ -106,21 +106,25 @@ public class SchemaParser
         {
             if (arg.Name.Value != RolesArgumentName)
                 continue;
+            
             var values = ((GraphQLListValue)arg.Value).Values;
-            var roles = new List<string>();
+            if (values is null || values.Count == 0) continue;
 
-            foreach (var value in values)
-            {
-                if (value is GraphQLStringValue v)
-                {
-                    roles.Add(v.Value.ToString());
-                }
-            }
-
-            return roles.ToArray();
+            return GetGraphQlValues(values).ToArray();
         }
 
         return Array.Empty<string>();
+    }
+
+    private static IEnumerable<string> GetGraphQlValues(List<GraphQLValue> values)
+    {
+        foreach (var value in values)
+        {
+            if (value is GraphQLStringValue v)
+            {
+                yield return v.Value.ToString();
+            }
+        }
     }
 
     private static string[] GetRoles(IHasDirectivesNode fieldDefinition)
@@ -128,6 +132,7 @@ public class SchemaParser
         var directive = fieldDefinition.Directives?.First(
             d => d.Name.Value == AuthorizeDirectiveName
         );
+        
         if (directive?.Arguments is null)
             return Array.Empty<string>();
 
@@ -135,18 +140,11 @@ public class SchemaParser
         {
             if (arg.Name.Value != RolesArgumentName)
                 continue;
+            
             var values = ((GraphQLListValue)arg.Value).Values;
-            var roles = new List<string>();
-
-            foreach (var value in values)
-            {
-                if (value is GraphQLStringValue v)
-                {
-                    roles.Add(v.Value.ToString());
-                }
-            }
-
-            return roles.ToArray();
+            if (values is null || values.Count == 0) continue;
+            
+            return GetGraphQlValues(values).ToArray();
         }
 
         return Array.Empty<string>();
