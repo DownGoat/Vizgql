@@ -30,13 +30,19 @@ public sealed class SchemaAuthorizationShould
     [Test]
     public void ExceptionOnMissingRootTypeAuthorizationDirective()
     {
-        Assert.Throws<MissingAuthorizationDirectiveException>(
-            () =>
-                SchemaAuthorization.AssertValidate(
-                    _missingRootSdl,
-                    new ValidationOptions(AllowRootTypeWithoutAuthorization: false)
-                )
-        );
+        const string exceptionName = nameof(MissingAuthorizationDirectiveException);
+        try
+        {
+            SchemaAuthorization.AssertValidate(
+                _missingRootSdl,
+                new ValidationOptions(AllowRootTypeWithoutAuthorization: false)
+            );
+            Assert.Fail($"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception.");
+        }
+        catch (AggregateException ex)
+        {
+            Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
+        }
 
         var validations = SchemaAuthorization.Validate(_missingRootSdl).ToArray();
         Assert.Multiple(() =>
@@ -53,13 +59,19 @@ public sealed class SchemaAuthorizationShould
     [Test]
     public void ExceptionWhenRootMissingRoles()
     {
-        Assert.Throws<MissingAuthorizationConstraintsException>(
-            () =>
-                SchemaAuthorization.AssertValidate(
-                    _missingRootSdl,
-                    new ValidationOptions(AllowRootTypeEmptyAuthorize: false)
-                )
-        );
+        const string exceptionName = nameof(MissingAuthorizationConstraintsException);
+        try
+        {
+            SchemaAuthorization.AssertValidate(
+                _missingRootSdl,
+                new ValidationOptions(AllowRootTypeEmptyAuthorize: false)
+            );
+            Assert.Fail($"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception.");
+        }
+        catch (AggregateException ex)
+        {
+            Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
+        }
 
         var validations = SchemaAuthorization.Validate(_missingRootSdl).ToArray();
         Assert.That(
@@ -82,9 +94,16 @@ public sealed class SchemaAuthorizationShould
     [Test]
     public void ExceptionOnMissingRoleForField()
     {
-        Assert.Throws<MissingAuthorizationConstraintsException>(
-            () => SchemaAuthorization.AssertValidate(_missingFieldRole, new ValidationOptions())
-        );
+        const string exceptionName = nameof(MissingAuthorizationConstraintsException);
+        try
+        {
+            SchemaAuthorization.AssertValidate(_missingFieldRole, new ValidationOptions());
+            Assert.Fail($"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception.");
+        }
+        catch (AggregateException ex)
+        {
+            Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
+        }
 
         var validations = SchemaAuthorization.Validate(_missingFieldRole).ToArray();
         Assert.That(
@@ -97,13 +116,20 @@ public sealed class SchemaAuthorizationShould
     [Test]
     public void ExceptionOnMissingFieldAuthorization()
     {
-        Assert.Throws<FieldMissingAuthorizationDirectiveException>(
-            () =>
-                SchemaAuthorization.AssertValidate(
-                    _missingFieldAuthorization,
-                    new ValidationOptions()
-                )
-        );
+        
+        const string exceptionName = nameof(FieldMissingAuthorizationDirectiveException);
+        try
+        {
+            SchemaAuthorization.AssertValidate(
+                _missingFieldAuthorization,
+                new ValidationOptions()
+            );
+            Assert.Fail($"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception.");
+        }
+        catch (AggregateException ex)
+        {
+            Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
+        }
 
         var validations = SchemaAuthorization.Validate(_missingFieldAuthorization).ToArray();
         Assert.That(
@@ -126,9 +152,17 @@ public sealed class SchemaAuthorizationShould
     [Test]
     public void ExceptionOnMissingRootAndFieldAuthorization()
     {
-        Assert.Throws<MissingAuthorizationDirectiveException>(
-            () => SchemaAuthorization.AssertValidate(_noAuthorization)
-        );
+        const string exceptionName = nameof(MissingAuthorizationDirectiveException);
+        try
+        {
+            SchemaAuthorization.AssertValidate(_noAuthorization);
+            Assert.Fail($"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception.");
+        }
+        catch (AggregateException ex)
+        {
+            Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
+        }
+
 
         var validations = SchemaAuthorization.Validate(_noAuthorization).ToArray();
         Assert.Multiple(() =>

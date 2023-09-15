@@ -14,10 +14,13 @@ public static class SchemaAuthorization
 
         var schemaType = SchemaParser.Parse(sdl);
 
+        var exceptions = new List<Exception>();
         foreach (var rootType in schemaType.RootTypes)
         {
-            AssertRootTypeAuthorization(rootType, validationOptions);
+            exceptions.AddRange(AssertRootTypeAuthorization(rootType, validationOptions));
         }
+
+        if (exceptions.Any()) throw new AggregateException(exceptions);
     }
 
     public static IEnumerable<ValidationAssertion> Validate(string sdl)
@@ -40,15 +43,16 @@ public static class SchemaAuthorization
         return validations;
     }
 
-    private static void AssertRootTypeAuthorization(RootType rootType, ValidationOptions options)
+    private static List<Exception> AssertRootTypeAuthorization(RootType rootType, ValidationOptions options)
     {
         var validations = rootType.Validate().ToArray();
+        var exceptions = new List<Exception>();
         if (
             !options.AllowRootTypeWithoutAuthorization
             && validations.Any(x => x.Type == MissingAuthorization)
         )
         {
-            throw new MissingAuthorizationDirectiveException(rootType.Name);
+            exceptions.Add(new MissingAuthorizationDirectiveException(rootType.Name));
         }
 
         if (
@@ -56,16 +60,18 @@ public static class SchemaAuthorization
             && validations.Any(x => x.Type == MissingAuthorizationConstraints)
         )
         {
-            throw new MissingAuthorizationConstraintsException(rootType.Name);
+            exceptions.Add(new MissingAuthorizationConstraintsException(rootType.Name));
         }
 
         foreach (var field in rootType.Fields)
         {
-            AssertFieldAuthorization(field, rootType, options);
+            exceptions.AddRange(AssertFieldAuthorization(field, rootType, options));
         }
+
+        return exceptions;
     }
 
-    private static void AssertFieldAuthorization(
+    private static IEnumerable<Exception> AssertFieldAuthorization(
         FieldType field,
         RootType rootType,
         ValidationOptions options
@@ -74,19 +80,20 @@ public static class SchemaAuthorization
         var validations = field.Validate(rootType).ToArray();
         var fieldName = $"{rootType.Name} => {field.Name}";
 
+
         if (FieldAuthorizationRules.MissingAuthorizationDirective(validations))
         {
-            throw new MissingAuthorizationDirectiveException(fieldName);
+            yield return new MissingAuthorizationDirectiveException(fieldName);
         }
 
         if (FieldAuthorizationRules.MissingConstraints(validations))
         {
-            throw new MissingAuthorizationConstraintsException(fieldName);
+            yield return new MissingAuthorizationConstraintsException(fieldName);
         }
 
         if (FieldAuthorizationRules.FieldMissingAuthorization(validations, options))
         {
-            throw new FieldMissingAuthorizationDirectiveException(fieldName);
+            yield return new FieldMissingAuthorizationDirectiveException(fieldName);
         }
     }
 }

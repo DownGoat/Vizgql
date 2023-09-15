@@ -8,4 +8,6 @@ var sp = new SchemaParser();
 var schemaType = SchemaParser.Parse(sdlContent);
 var validations = schemaType.Validate();
 
+SchemaAuthorization.AssertValidate(sdlContent);
+
 Console.WriteLine("asd");
