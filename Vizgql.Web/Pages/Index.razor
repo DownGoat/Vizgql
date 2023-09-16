@@ -1,0 +1,21 @@
+﻿@page "/"
+@using Vizgql.ReportBuilder
+@using Vizgql.Core
+@using Vizgql.Core.Types
+
+<PageTitle>Index</PageTitle>
+
+<div class="schema-container">
+    <Main Types="ParseSchema()"></Main>
+</div>
+
+@code {
+
+    public SchemaType ParseSchema()
+    {
+        var sdlContent = File.ReadAllText("schema.graphql");
+        var sp = new SchemaParser();
+        return SchemaParser.Parse(sdlContent);
+    }
+
+}

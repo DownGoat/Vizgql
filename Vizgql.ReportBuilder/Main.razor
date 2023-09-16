@@ -1,0 +1,13 @@
+@using Vizgql.Core
+@using Vizgql.Core.Types
+<div class="root-types">
+    @foreach (var root in Schema.RootTypes)
+    {
+        <RootTypeComponent RootType="root" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public SchemaType Schema { get; set; }
+}
