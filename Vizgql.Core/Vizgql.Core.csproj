@@ -17,17 +17,17 @@ projects aims to give you tools to automatically test this, and genrate vizualis
         <RepositoryUrl>https://github.com/DownGoat/Vizgql</RepositoryUrl>
         <PackageTags>preview</PackageTags>
         <PackageReleaseNotes>Test release</PackageReleaseNotes>
+        <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
      </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="GraphQL-Parser" Version="9.2.0" />
     </ItemGroup>
 
-
     <ItemGroup>
-      <None Update="README.md">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Include="..\README.md" Pack="true" PackagePath="" Visible="False" />
     </ItemGroup>
+
 
 </Project>
