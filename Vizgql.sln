@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.Web", "Vizgql.Web\Vizgql.Web.csproj", "{E21A0695-3F6C-4A21-BFD7-A3E2B5AD7965}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.ReportBuilder", "Vizgql.ReportBuilder\Vizgql.ReportBuilder.csproj", "{87467AE2-2B1D-4FF3-96A6-73A3FBF994C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.ReportBuilder.Html", "Vizgql.ReportBuilder.Html\Vizgql.ReportBuilder.Html.csproj", "{87467AE2-2B1D-4FF3-96A6-73A3FBF994C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.Console", "Vizgql.Console\Vizgql.Console.csproj", "{AA6ECD28-47E7-4805-B288-AE6279659EA2}"
 EndProject
@@ -11,6 +11,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B9AB81E6-1626-4B51-A4C7-69E605CECA57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.Core.Tests", "Vizgql.Core.Tests\Vizgql.Core.Tests.csproj", "{8255E113-35A8-4BB9-8CE3-4A58AA463343}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vizgql.ReportBuilder", "Vizgql.ReportBuilder\Vizgql.ReportBuilder.csproj", "{6866FAF9-8B85-4508-90C4-AB0582206C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8255E113-35A8-4BB9-8CE3-4A58AA463343}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6866FAF9-8B85-4508-90C4-AB0582206C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6866FAF9-8B85-4508-90C4-AB0582206C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6866FAF9-8B85-4508-90C4-AB0582206C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6866FAF9-8B85-4508-90C4-AB0582206C98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8255E113-35A8-4BB9-8CE3-4A58AA463343} = {B9AB81E6-1626-4B51-A4C7-69E605CECA57}

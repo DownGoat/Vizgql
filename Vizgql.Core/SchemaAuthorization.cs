@@ -10,8 +10,6 @@ public static class SchemaAuthorization
 
     public static void AssertValidate(string sdl, ValidationOptions validationOptions)
     {
-        var parser = new SchemaParser();
-
         var schemaType = SchemaParser.Parse(sdl);
 
         var exceptions = new List<Exception>();
@@ -26,8 +24,6 @@ public static class SchemaAuthorization
 
     public static IEnumerable<ValidationAssertion> Validate(string sdl)
     {
-        var parser = new SchemaParser();
-
         var schemaType = SchemaParser.Parse(sdl);
 
         var validations = new List<ValidationAssertion>();

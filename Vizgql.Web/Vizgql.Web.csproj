@@ -15,7 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Vizgql.Core\Vizgql.Core.csproj" />
-      <ProjectReference Include="..\Vizgql.ReportBuilder\Vizgql.ReportBuilder.csproj" />
+      <ProjectReference Include="..\Vizgql.ReportBuilder.Html\Vizgql.ReportBuilder.Html.csproj" />
     </ItemGroup>
 
     <ItemGroup>

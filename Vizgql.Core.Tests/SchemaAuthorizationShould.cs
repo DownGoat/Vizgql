@@ -1,4 +1,3 @@
-using Vizgql.Core;
 using Vizgql.Core.Exceptions;
 using Vizgql.Core.Types;
 using static Vizgql.Core.Types.ValidationAssertionType;

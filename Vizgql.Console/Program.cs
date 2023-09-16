@@ -1,13 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using Vizgql.Core;
+using Vizgql.ReportBuilder;
 
-var sdlContent = File.ReadAllText("cow.graphql");
-var sp = new SchemaParser();
+var sdlContent = File.ReadAllText("vortex.graphql");
 
 var schemaType = SchemaParser.Parse(sdlContent);
-var validations = schemaType.Validate();
-
-SchemaAuthorization.AssertValidate(sdlContent);
-
-Console.WriteLine("asd");
+Console.WriteLine(TextReport.Create(schemaType));
