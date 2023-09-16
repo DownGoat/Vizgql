@@ -29,4 +29,8 @@
       <ProjectReference Include="..\Vizgql.ReportBuilder\Vizgql.ReportBuilder.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    </ItemGroup>
+
 </Project>

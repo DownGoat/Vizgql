@@ -31,25 +31,28 @@ public static class TextReport
         for (var i = 0; i < rootType.Fields.Length; i++)
         {
             const string indent = "    ";
-            var boxChar = i < rootType.Fields.Length - 1
-                ? '├'
-                : '└';
+            var boxChar = i < rootType.Fields.Length - 1 ? '├' : '└';
             var field = rootType.Fields[i];
 
             CreateFieldType(sb, indent, boxChar, field);
         }
-        
+
         sb.Append('\n');
     }
 
-    private static void CreateFieldType(StringBuilder sb, string indent, char boxChar, FieldType field)
+    private static void CreateFieldType(
+        StringBuilder sb,
+        string indent,
+        char boxChar,
+        FieldType field
+    )
     {
         sb.Append(indent);
         sb.Append(boxChar);
         sb.Append(' ');
         sb.Append(field.Name);
         sb.Append(' ');
-        
+
         if (field.HasAuthorization)
         {
             sb.Append(CreateAuthorizationDirective(field.Roles));
@@ -62,8 +65,6 @@ public static class TextReport
     {
         var rolesText = string.Join(", ", roles.Select(x => $"\"{x}\""));
 
-        return string.IsNullOrEmpty(rolesText)
-            ? "@authorize"
-            : $"@authorize({rolesText})";
+        return string.IsNullOrEmpty(rolesText) ? "@authorize" : $"@authorize({rolesText})";
     }
 }
