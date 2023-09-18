@@ -19,7 +19,8 @@ public sealed class CommandLineOptions
         'n',
         "header-name",
         Required = false,
-        HelpText = "HTTP header name for authentication."
+        HelpText = "HTTP header name for authentication.",
+        Default = "Authorization"
     )]
     public string? HeaderName { get; set; }
 
