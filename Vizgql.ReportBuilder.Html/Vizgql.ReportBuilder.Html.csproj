@@ -4,6 +4,20 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Version>0.0.2</Version>
+        <Title>Vizgql.ReportBuilder.Html</Title>
+        <Description>The goal of this project is to have a tool for vizualizing and testing
+            authorization for GraphQL schemas. It is not always clear and easy to vizualize
+            how authorization constraints (roles/policies) are applied fields. This
+            projects aims to give you tools to automatically test this, and genrate vizualisations.</Description>
+        <PackageProjectUrl>https://github.com/DownGoat/Vizgql</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/DownGoat/Vizgql</RepositoryUrl>
+        <PackageTags>preview</PackageTags>
+        <PackageReleaseNotes>Test release</PackageReleaseNotes>
+        <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <AssemblyVersion>0.0.2</AssemblyVersion>
+        <FileVersion>0.0.2</FileVersion>
     </PropertyGroup>
 
 
@@ -22,6 +36,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Vizgql.Core\Vizgql.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="" Visible="False" />
     </ItemGroup>
 
 </Project>
