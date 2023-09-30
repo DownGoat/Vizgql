@@ -7,6 +7,7 @@
 *.sln.docstates
 .idea/
 *.graphql
+Vizgql.Console/oauth.json
 
 # Build results
 
