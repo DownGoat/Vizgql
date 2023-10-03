@@ -4,10 +4,10 @@
     <h2>@RootType.Name</h2>
     <p>Root type directives:</p>
     <div class="directives">
-        @foreach (var role in RootType.Roles)
-        {
-            <div class="directive-item">@role</div>
-        }
+        @* @foreach (var role in RootType.Roles) *@
+        @* { *@
+        @*     <div class="directive-item">@role</div> *@
+        @* } *@
     </div>
 
     <h3>Fields</h3>
@@ -17,20 +17,20 @@
             <div class="resolver">
                 <div class="resolver-name">@resolver.Name</div>
                 <div class="directives">
-                    @foreach (var role in resolver.Roles)
-                    {
-                        <div class="directive-item">@role</div>
-                    }
-                    
-                    @if (HasNoAuthorization(resolver))
-                    {
-                        <div class="critical">Unauthorized field</div>
-                    }
-                    
-                    @if (HasMissingRoles(resolver))
-                    {
-                        <div class="warning">Potential missing roles (has authorize directive: @resolver.HasAuthorization)</div>
-                    }
+                    @* @foreach (var role in resolver.♥Roles) *@
+                    @* { *@
+                    @*     <div class="directive-item">@role</div> *@
+                    @* } *@
+                    @* *@
+                    @* @if (HasNoAuthorization(resolver)) *@
+                    @* { *@
+                    @*     <div class="critical">Unauthorized field</div> *@
+                    @* } *@
+                    @* *@
+                    @* @if (HasMissingRoles(resolver)) *@
+                    @* { *@
+                    @*     <div class="warning">Potential missing roles (has authorize directive: @resolver.HasAuthorization)</div> *@
+                    @* } *@
                 </div>
             </div>
         }
@@ -49,7 +49,7 @@
 
     private bool HasMissingRoles(FieldType resolver)
     {
-        return RootType is { HasAuthorization: true,Roles.Length: 0 } && resolver.Roles.Length == 0;
+        return RootType is { HasAuthorization: true,Roles.Length: 0 } && resolver.Directives.Length == 0;
     }
 
 }

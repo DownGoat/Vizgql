@@ -23,7 +23,7 @@ public static class TextReport
         if (rootType.HasAuthorization)
         {
             sb.Append(' ');
-            sb.Append(CreateAuthorizationDirective(rootType.Roles));
+            sb.Append(CreateAuthorizationDirectives(rootType.Directives));
         }
 
         sb.Append('\n');
@@ -55,16 +55,32 @@ public static class TextReport
 
         if (field.HasAuthorization)
         {
-            sb.Append(CreateAuthorizationDirective(field.Roles));
+            sb.Append(CreateAuthorizationDirectives(field.Directives));
         }
 
         sb.Append('\n');
     }
 
-    private static string CreateAuthorizationDirective(IEnumerable<string> roles)
+    private static string CreateAuthorizationDirectives(AuthorizationDirective[] roles)
     {
-        var rolesText = string.Join(", ", roles.Select(x => $"\"{x}\""));
+        return string.Join(" ", roles.Select(CreateAuthorizationDirective));
+    }
 
-        return string.IsNullOrEmpty(rolesText) ? "@authorize" : $"@authorize({rolesText})";
+    private static string CreateAuthorizationDirective(AuthorizationDirective directive)
+    {
+        var content = string.Empty;
+
+        if (directive.Roles.Length != 0)
+        {
+            var roles = string.Join(", ", directive.Roles.Select(x => $"\"{x}\""));
+            content = $"(roles: [ {roles} ])";
+        }
+
+        if (!string.IsNullOrEmpty(directive.Policy))
+        {
+            content = $"(policy: \"{directive.Policy}\")";
+        }
+
+        return "@authorize" + content;
     }
 }
