@@ -49,7 +49,8 @@
 
     private bool HasMissingRoles(FieldType resolver)
     {
-        return RootType is { HasAuthorization: true,Roles.Length: 0 } && resolver.Directives.Length == 0;
+        return false;
+    // return RootType is { HasAuthorization: true,Roles.Length: 0 } && resolver.Directives.Length == 0;
     }
 
 }

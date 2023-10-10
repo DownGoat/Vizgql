@@ -38,4 +38,7 @@ public record FieldType(string Name, bool HasAuthorization, AuthorizationDirecti
     }
 }
 
-public record AuthorizationDirective(string[] Roles, string Policy);
+public record AuthorizationDirective(string[] Roles, string Policy)
+{
+    public bool IsEmpty() => Roles.Length == 0 && string.IsNullOrEmpty(Policy);
+};

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CommandLine;
+﻿using CommandLine;
 using Vizgql.Console;
 using Vizgql.Core;
 using Vizgql.ReportBuilder;
@@ -26,7 +25,13 @@ static async Task HandleOptionsAsync(
     }
 
     var schemaType = SchemaParser.Parse(textToParse);
-    var textReport = SchemaTextReport.Create(schemaType, options.Validations);
+    var textReport = SchemaTextReport.Create(
+        schemaType, 
+        new SchemaTextReportOptions(
+            options.Validations,
+            options.GetRoles(),
+            options.GetPolicies(),
+            options.UniqueConstraints));
 
     Console.WriteLine(textReport);
 

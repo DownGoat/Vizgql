@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System.Security.AccessControl;
+using System.Text;
 using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
 
 public static class SchemaTextReport
 {
-    public static string Create(SchemaType schemaType, bool validations)
+    public static string Create(SchemaType schemaType, SchemaTextReportOptions options)
     {
         var sb = new StringBuilder();
 
@@ -13,13 +14,97 @@ public static class SchemaTextReport
         {
             CreateRootType(sb, rootType);
         }
-        
-        if (validations)
+
+        if (options.Validations)
         {
-            sb.Append(ValidationsTextReport.Create(schemaType));
+            CreateValidations(schemaType, sb);
+        }
+
+        if (options.Roles != null || options.Policies != null)
+        {
+            CreateConstraintsFilter(schemaType, new Constraints(options.Roles, options.Policies), sb);
+        }
+
+        if (options.UniqueConstraints)
+        {
+            CreateUniqueConstraints(schemaType, sb);
         }
 
         return sb.ToString();
+    }
+
+    private static void CreateUniqueConstraints(SchemaType schemaType, StringBuilder sb)
+    {
+        var roles = schemaType.RootTypes
+            .SelectMany(rt => rt.Fields)
+            .SelectMany(ft => ft.Directives)
+            .SelectMany(d => d.Roles)
+            .Union(schemaType.RootTypes
+                .SelectMany(r => r.Directives.SelectMany(rr => rr.Roles)))
+            .Distinct();
+
+        var policies = schemaType.RootTypes
+            .SelectMany(rt => rt.Fields)
+            .SelectMany(ft => ft.Directives)
+            .Select(d => d.Policy)
+            .Union(schemaType.RootTypes
+                .SelectMany(r => r.Directives.Select(rr => rr.Policy)))
+            .Distinct();
+        
+        sb.Append("\nUnique constraints:\n");
+        sb.Append("Roles: ");
+        sb.Append(string.Join(",", roles));
+        sb.Append('\n');
+        sb.Append("Policies: ");
+        sb.Append(string.Join(",", policies));
+    }
+
+    private static void CreateConstraintsFilter(SchemaType schemaType, Constraints constraints, StringBuilder sb)
+    {
+        sb.Append("\nConstraints filter:\n");
+
+        var missingRootTypes = new List<RootType>();
+        var missingFieldsByRootType = new Dictionary<RootType, List<FieldType>>();
+        foreach (var rootType in schemaType.RootTypes)
+        {
+            if (!constraints.IsAuthorized(rootType.HasAuthorization, rootType.Directives))
+            {
+                missingRootTypes.Add(rootType);
+                continue;
+            }
+
+            foreach (var fieldType in rootType.Fields)
+            {
+                if (!constraints.IsAuthorized(fieldType.HasAuthorization, fieldType.Directives))
+                {
+                    if (!missingFieldsByRootType.ContainsKey(rootType))
+                    {
+                        missingFieldsByRootType.Add(rootType, new List<FieldType>());
+                    }
+
+                    missingFieldsByRootType[rootType].Add(fieldType);
+                }
+            }
+        }
+
+        foreach (var missingRootType in missingRootTypes)
+        {
+            sb.Append($"Missing authorization for root type {missingRootType.Name}\n");
+        }
+
+        foreach (var (rootType, fieldTypes) in missingFieldsByRootType)
+        {
+            sb.Append($"\n{rootType.Name}:\n");
+            foreach (var fieldType in fieldTypes)
+            {
+                CreateFieldType(sb, "    ", '├', fieldType);
+            }
+        }
+        
+        if (missingRootTypes.Count == 0 && missingFieldsByRootType.Count == 0)
+        {
+            sb.Append("No missing constraints found.\n");
+        }
     }
 
     private static void CreateRootType(StringBuilder sb, RootType rootType)
@@ -87,5 +172,54 @@ public static class SchemaTextReport
         }
 
         return "@authorize" + content;
+    }
+
+    private static string CreateValidations(SchemaType schemaType, StringBuilder sb)
+    {
+        var validations = schemaType.Validate();
+
+        sb.Append("\nValidations errors:\n");
+        foreach (var validationAssertion in validations)
+        {
+            sb.Append(
+                $"{validationAssertion.Name} - {ValidationAssertionTypeDescriptions.ToString(validationAssertion.Type)}\n");
+        }
+
+        return sb.ToString();
+    }
+}
+
+public readonly record struct SchemaTextReportOptions(bool Validations, string?[] Roles, string?[] Policies,
+    bool UniqueConstraints);
+
+public record Constraints(string[]? Roles, string[]? Policies)
+{
+    public bool IsAuthorized(bool hasAuthorization, AuthorizationDirective[] authorizationDirectives)
+    {
+        if (!hasAuthorization || authorizationDirectives.All(ad => ad.IsEmpty()))
+        {
+            return true;
+        }
+
+        foreach (var authorizationDirective in authorizationDirectives)
+        {
+            if (Roles != null && Roles.Length != 0)
+            {
+                if (authorizationDirective.Roles.Any(r => Roles.Contains(r)))
+                {
+                    return true;
+                }
+            }
+
+            if (Policies != null && Policies.Length != 0)
+            {
+                if (Policies.Contains(authorizationDirective.Policy))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

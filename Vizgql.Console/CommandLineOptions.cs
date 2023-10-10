@@ -66,4 +66,22 @@ public sealed class CommandLineOptions
         Default = false
     )]
     public bool Validations { get; set; }
+    
+    [Option(
+        "unique-constraints",
+        Required = false,
+        HelpText = "Prints all the unique constrains as a comma separated list.",
+        Default = false
+    )]
+    public bool UniqueConstraints { get; set; }
+
+    public string[]? GetRoles()
+    {
+        return Roles?.Split(',');
+    }
+    
+    public string[]? GetPolicies()
+    {
+        return Policies?.Split(',');
+    }
 }
