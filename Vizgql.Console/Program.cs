@@ -25,7 +25,13 @@ static async Task HandleOptionsAsync(
     }
 
     var schemaType = SchemaParser.Parse(textToParse);
-    var textReport = TextReport.Create(schemaType);
+    var textReport = SchemaTextReport.Create(
+        schemaType, 
+        new SchemaTextReportOptions(
+            options.Validations,
+            options.GetRoles(),
+            options.GetPolicies(),
+            options.UniqueConstraints));
 
     Console.WriteLine(textReport);
 

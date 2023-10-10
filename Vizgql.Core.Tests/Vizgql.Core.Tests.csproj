@@ -22,19 +22,34 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="schemas\missing-field-authorization.graphql">
+      <None Update="schemas\roles\missing-field-authorization.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="schemas\missing-role-for-field.graphql">
+      <None Update="schemas\roles\missing-field-authorization-root-has-constraints.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="schemas\missing-root-auth-directive.graphql">
+      <None Update="schemas\roles\missing-role-for-field.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="schemas\missing-field-authorization-root-has-constraints.graphql">
+      <None Update="schemas\roles\missing-root-auth-directive.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="schemas\no-authorization.graphql">
+      <None Update="schemas\roles\no-authorization.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\missing-root-auth-directive.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\missing-role-for-field.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\missing-field-authorization.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\missing-field-authorization-root-has-constraints.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\no-authorization.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

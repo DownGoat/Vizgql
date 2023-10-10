@@ -1,6 +1,6 @@
 ﻿namespace Vizgql.Core.Types;
 
-public record FieldType(string Name, bool HasAuthorization, string[] Roles)
+public record FieldType(string Name, bool HasAuthorization, AuthorizationDirective[] Directives)
 {
     public IEnumerable<ValidationAssertion> Validate(RootType parent)
     {
@@ -22,7 +22,7 @@ public record FieldType(string Name, bool HasAuthorization, string[] Roles)
             );
         }
 
-        if (HasAuthorization && Roles.Length == 0)
+        if (HasAuthorization && IsMissingConstraints())
         {
             yield return new ValidationAssertion(
                 name,
@@ -30,4 +30,15 @@ public record FieldType(string Name, bool HasAuthorization, string[] Roles)
             );
         }
     }
+
+    public bool IsMissingConstraints()
+    {
+        return Directives.Length == 0
+            || Directives.All(d => d.Roles.Length == 0 && string.IsNullOrEmpty(d.Policy));
+    }
 }
+
+public record AuthorizationDirective(string[] Roles, string Policy)
+{
+    public bool IsEmpty() => Roles.Length == 0 && string.IsNullOrEmpty(Policy);
+};

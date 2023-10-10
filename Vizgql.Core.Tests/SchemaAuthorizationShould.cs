@@ -7,34 +7,107 @@ namespace Vizgql.Core.Tests;
 [TestFixture]
 public sealed class SchemaAuthorizationShould
 {
-    private readonly string _missingRootSdl = File.ReadAllText(
-        Path.Combine("schemas", "missing-root-auth-directive.graphql")
-    );
+    private const string Schemas = "schemas";
+    private const string RolesDir = "roles";
+    private const string PoliciesDir = "policies";
+    private const string MissingRootAuthDirectiveSchema = "missing-root-auth-directive.graphql";
+    private const string MissingRoleForFieldSchema = "missing-role-for-field.graphql";
+    private const string MissingFieldAuthorizationSchema = "missing-field-authorization.graphql";
 
-    private readonly string _missingFieldRole = File.ReadAllText(
-        Path.Combine("schemas", "missing-role-for-field.graphql")
-    );
+    private const string MissingFieldAuthorizationRootHasConstraintsSchema =
+        "missing-field-authorization-root-has-constraints.graphql";
 
-    private readonly string _missingFieldAuthorization = File.ReadAllText(
-        Path.Combine("schemas", "missing-field-authorization.graphql")
-    );
+    private const string NoAuthorizationSchema = "no-authorization.graphql";
 
-    private readonly string _missingFieldAuthorizationRootHasConstraint = File.ReadAllText(
-        Path.Combine("schemas", "missing-field-authorization-root-has-constraints.graphql")
-    );
+    private readonly Dictionary<string, Dictionary<string, string>> SchemasByDir =
+        new()
+        {
+            {
+                RolesDir,
+                new Dictionary<string, string>
+                {
+                    {
+                        MissingRootAuthDirectiveSchema,
+                        File.ReadAllText(
+                            Path.Combine(Schemas, RolesDir, MissingRootAuthDirectiveSchema)
+                        )
+                    },
+                    {
+                        MissingRoleForFieldSchema,
+                        File.ReadAllText(Path.Combine(Schemas, RolesDir, MissingRoleForFieldSchema))
+                    },
+                    {
+                        MissingFieldAuthorizationSchema,
+                        File.ReadAllText(
+                            Path.Combine(Schemas, RolesDir, MissingFieldAuthorizationSchema)
+                        )
+                    },
+                    {
+                        MissingFieldAuthorizationRootHasConstraintsSchema,
+                        File.ReadAllText(
+                            Path.Combine(
+                                Schemas,
+                                RolesDir,
+                                MissingFieldAuthorizationRootHasConstraintsSchema
+                            )
+                        )
+                    },
+                    {
+                        NoAuthorizationSchema,
+                        File.ReadAllText(Path.Combine(Schemas, RolesDir, NoAuthorizationSchema))
+                    }
+                }
+            },
+            {
+                PoliciesDir,
+                new Dictionary<string, string>
+                {
+                    {
+                        MissingRootAuthDirectiveSchema,
+                        File.ReadAllText(
+                            Path.Combine(Schemas, PoliciesDir, MissingRootAuthDirectiveSchema)
+                        )
+                    },
+                    {
+                        MissingRoleForFieldSchema,
+                        File.ReadAllText(
+                            Path.Combine(Schemas, PoliciesDir, MissingRoleForFieldSchema)
+                        )
+                    },
+                    {
+                        MissingFieldAuthorizationSchema,
+                        File.ReadAllText(
+                            Path.Combine(Schemas, PoliciesDir, MissingFieldAuthorizationSchema)
+                        )
+                    },
+                    {
+                        MissingFieldAuthorizationRootHasConstraintsSchema,
+                        File.ReadAllText(
+                            Path.Combine(
+                                Schemas,
+                                PoliciesDir,
+                                MissingFieldAuthorizationRootHasConstraintsSchema
+                            )
+                        )
+                    },
+                    {
+                        NoAuthorizationSchema,
+                        File.ReadAllText(Path.Combine(Schemas, PoliciesDir, NoAuthorizationSchema))
+                    }
+                }
+            }
+        };
 
-    private readonly string _noAuthorization = File.ReadAllText(
-        Path.Combine("schemas", "no-authorization.graphql")
-    );
-
-    [Test]
-    public void ExceptionOnMissingRootTypeAuthorizationDirective()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void ExceptionOnMissingRootTypeAuthorizationDirective(string dir)
     {
+        var schema = SchemasByDir[dir][MissingRootAuthDirectiveSchema];
         const string exceptionName = nameof(MissingAuthorizationDirectiveException);
         try
         {
             SchemaAuthorization.AssertValidate(
-                _missingRootSdl,
+                schema,
                 new ValidationOptions(AllowRootTypeWithoutAuthorization: false)
             );
             Assert.Fail(
@@ -46,7 +119,7 @@ public sealed class SchemaAuthorizationShould
             Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
         }
 
-        var validations = SchemaAuthorization.Validate(_missingRootSdl).ToArray();
+        var validations = SchemaAuthorization.Validate(schema).ToArray();
         Assert.Multiple(() =>
         {
             Assert.That(
@@ -58,14 +131,16 @@ public sealed class SchemaAuthorizationShould
         });
     }
 
-    [Test]
-    public void ExceptionWhenRootMissingRoles()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void ExceptionWhenRootMissingRoles(string dir)
     {
+        var schema = SchemasByDir[dir][MissingRootAuthDirectiveSchema];
         const string exceptionName = nameof(MissingAuthorizationConstraintsException);
         try
         {
             SchemaAuthorization.AssertValidate(
-                _missingRootSdl,
+                schema,
                 new ValidationOptions(AllowRootTypeEmptyAuthorize: false)
             );
             Assert.Fail(
@@ -77,31 +152,35 @@ public sealed class SchemaAuthorizationShould
             Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
         }
 
-        var validations = SchemaAuthorization.Validate(_missingRootSdl).ToArray();
+        var validations = SchemaAuthorization.Validate(schema).ToArray();
         Assert.That(
             validations.Any(x => x is { Type: MissingAuthorizationConstraints, Name: "Query" })
         );
     }
 
-    [Test]
-    public void AllowMissingRootTypeAuthorization()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void AllowMissingRootTypeAuthorization(string dir)
     {
+        var schema = SchemasByDir[dir][MissingRootAuthDirectiveSchema];
         Assert.DoesNotThrow(
             () =>
                 SchemaAuthorization.AssertValidate(
-                    _missingRootSdl,
+                    schema,
                     new ValidationOptions(AllowRootTypeWithoutAuthorization: true)
                 )
         );
     }
 
-    [Test]
-    public void ExceptionOnMissingRoleForField()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void ExceptionOnMissingRoleForField(string dir)
     {
+        var schema = SchemasByDir[dir][MissingRoleForFieldSchema];
         const string exceptionName = nameof(MissingAuthorizationConstraintsException);
         try
         {
-            SchemaAuthorization.AssertValidate(_missingFieldRole, new ValidationOptions());
+            SchemaAuthorization.AssertValidate(schema, new ValidationOptions());
             Assert.Fail(
                 $"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception."
             );
@@ -111,7 +190,7 @@ public sealed class SchemaAuthorizationShould
             Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
         }
 
-        var validations = SchemaAuthorization.Validate(_missingFieldRole).ToArray();
+        var validations = SchemaAuthorization.Validate(schema).ToArray();
         Assert.That(
             validations.Any(
                 x => x is { Type: MissingAuthorizationConstraints, Name: "Query.listItems" }
@@ -119,13 +198,15 @@ public sealed class SchemaAuthorizationShould
         );
     }
 
-    [Test]
-    public void ExceptionOnMissingFieldAuthorization()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void ExceptionOnMissingFieldAuthorization(string dir)
     {
+        var schema = SchemasByDir[dir][MissingFieldAuthorizationSchema];
         const string exceptionName = nameof(FieldMissingAuthorizationDirectiveException);
         try
         {
-            SchemaAuthorization.AssertValidate(_missingFieldAuthorization, new ValidationOptions());
+            SchemaAuthorization.AssertValidate(schema, new ValidationOptions());
             Assert.Fail(
                 $"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception."
             );
@@ -135,31 +216,35 @@ public sealed class SchemaAuthorizationShould
             Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
         }
 
-        var validations = SchemaAuthorization.Validate(_missingFieldAuthorization).ToArray();
+        var validations = SchemaAuthorization.Validate(schema).ToArray();
         Assert.That(
             validations.Any(x => x is { Type: MissingFieldAuthorization, Name: "Query.listItems" })
         );
     }
 
-    [Test]
-    public void AllowMissingFieldAuthorization()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void AllowMissingFieldAuthorization(string dir)
     {
+        var schema = SchemasByDir[dir][MissingFieldAuthorizationRootHasConstraintsSchema];
         Assert.DoesNotThrow(
             () =>
                 SchemaAuthorization.AssertValidate(
-                    _missingFieldAuthorizationRootHasConstraint,
+                    schema,
                     new ValidationOptions(AllowFieldWithoutAuthorization: true)
                 )
         );
     }
 
-    [Test]
-    public void ExceptionOnMissingRootAndFieldAuthorization()
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void ExceptionOnMissingRootAndFieldAuthorization(string dir)
     {
+        var schema = SchemasByDir[dir][NoAuthorizationSchema];
         const string exceptionName = nameof(MissingAuthorizationDirectiveException);
         try
         {
-            SchemaAuthorization.AssertValidate(_noAuthorization);
+            SchemaAuthorization.AssertValidate(schema);
             Assert.Fail(
                 $"Should have thrown a 'AggregateException' with an inner '{exceptionName}' exception."
             );
@@ -169,7 +254,7 @@ public sealed class SchemaAuthorizationShould
             Assert.That(ex.InnerExceptions.Any(x => x.GetType().Name == exceptionName), Is.True);
         }
 
-        var validations = SchemaAuthorization.Validate(_noAuthorization).ToArray();
+        var validations = SchemaAuthorization.Validate(schema).ToArray();
         Assert.Multiple(() =>
         {
             Assert.That(

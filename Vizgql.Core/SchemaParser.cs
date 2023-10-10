@@ -8,6 +8,7 @@ public class SchemaParser
 {
     private const string AuthorizeDirectiveName = "authorize";
     private const string RolesArgumentName = "roles";
+    private const string PolicyArgumentName = "policy";
 
     public static SchemaType Parse(string schema)
     {
@@ -93,62 +94,49 @@ public class SchemaParser
             ?? false;
     }
 
-    private static string[] GetRoles(GraphQLObjectTypeDefinition typeDefinition)
+    private static AuthorizationDirective[] ExtractDirective(GraphQLDirective directive)
     {
-        var directive = typeDefinition.Directives?.First(
-            d => d.Name.Value == AuthorizeDirectiveName
+        if (directive.Arguments is null)
+            return new[] { new AuthorizationDirective(Array.Empty<string>(), string.Empty) };
+
+        var rolesArguments = directive.Arguments.Where(x => x.Name.Value == RolesArgumentName);
+        var policyArgument = directive.Arguments.Where(x => x.Name.Value == PolicyArgumentName);
+
+        var roles = rolesArguments
+            .Select(arg => ((GraphQLListValue)arg.Value).Values ?? new List<GraphQLValue>())
+            .Select(values => values.Where(v => v is GraphQLStringValue))
+            .Select(values => values.Select(v => ((GraphQLStringValue)v).Value.ToString()));
+
+        var polices = policyArgument
+            .Select(arg => arg.Value)
+            .Select(v => ((GraphQLStringValue)v).Value.ToString());
+
+        var roleDirectives = roles.Select(
+            r => new AuthorizationDirective(r.ToArray(), string.Empty)
         );
 
-        if (directive?.Arguments is null)
-            return Array.Empty<string>();
-
-        foreach (var arg in directive.Arguments)
-        {
-            if (arg.Name.Value != RolesArgumentName)
-                continue;
-
-            var values = ((GraphQLListValue)arg.Value).Values;
-            if (values is null || values.Count == 0)
-                continue;
-
-            return GetGraphQlValues(values).ToArray();
-        }
-
-        return Array.Empty<string>();
-    }
-
-    private static IEnumerable<string> GetGraphQlValues(List<GraphQLValue> values)
-    {
-        foreach (var value in values)
-        {
-            if (value is GraphQLStringValue v)
-            {
-                yield return v.Value.ToString();
-            }
-        }
-    }
-
-    private static string[] GetRoles(IHasDirectivesNode fieldDefinition)
-    {
-        var directive = fieldDefinition.Directives?.First(
-            d => d.Name.Value == AuthorizeDirectiveName
+        var policyDirectives = polices.Select(
+            p => new AuthorizationDirective(Array.Empty<string>(), p)
         );
 
-        if (directive?.Arguments is null)
-            return Array.Empty<string>();
+        return roleDirectives.Union(policyDirectives).ToArray();
+    }
 
-        foreach (var arg in directive.Arguments)
-        {
-            if (arg.Name.Value != RolesArgumentName)
-                continue;
+    private static AuthorizationDirective[] GetRoles(GraphQLObjectTypeDefinition typeDefinition)
+    {
+        var directives =
+            typeDefinition.Directives?.Where(d => d.Name.Value == AuthorizeDirectiveName)
+            ?? new List<GraphQLDirective>();
 
-            var values = ((GraphQLListValue)arg.Value).Values;
-            if (values is null || values.Count == 0)
-                continue;
+        return directives.SelectMany(ExtractDirective).ToArray();
+    }
 
-            return GetGraphQlValues(values).ToArray();
-        }
+    private static AuthorizationDirective[] GetRoles(IHasDirectivesNode fieldDefinition)
+    {
+        var directives =
+            fieldDefinition.Directives?.Where(d => d.Name.Value == AuthorizeDirectiveName)
+            ?? new List<GraphQLDirective>();
 
-        return Array.Empty<string>();
+        return directives.SelectMany(ExtractDirective).ToArray();
     }
 }
