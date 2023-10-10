@@ -34,13 +34,17 @@ public static class SchemaFromHttp
         return await FetchTokenAsync(options.OAuthConfig!, cancellationToken);
     }
 
-    private static async Task<string> FetchTokenAsync(string optionsOAuthConfig, CancellationToken cancellationToken)
+    private static async Task<string> FetchTokenAsync(
+        string optionsOAuthConfig,
+        CancellationToken cancellationToken
+    )
     {
         var jsonContent = await File.ReadAllTextAsync(optionsOAuthConfig, cancellationToken);
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var oauthConfig = JsonSerializer.Deserialize<OAuthConfig>(jsonContent, options);
 
-        var app = PublicClientApplicationBuilder.Create(oauthConfig.ClientId)
+        var app = PublicClientApplicationBuilder
+            .Create(oauthConfig.ClientId)
             .WithAuthority(new Uri(oauthConfig.TokenUrl))
             .WithDefaultRedirectUri() // This uses "https://login.microsoftonline.com/common/oauth2/nativeclient" as the redirect URI.
             .Build();
@@ -56,18 +60,22 @@ public static class SchemaFromHttp
         catch (MsalUiRequiredException)
         {
             // UI interaction is required. This will show a dialog for username/password and any MFA challenges.
-            result = await app.AcquireTokenInteractive(oauthConfig.Scopes)
-                .ExecuteAsync();
+            result = await app.AcquireTokenInteractive(oauthConfig.Scopes).ExecuteAsync();
         }
 
         return result.AccessToken;
     }
 
-    private static async Task<OAuthConfig?> LoadOAuthConfigAsync(string jsonConfigPath, CancellationToken cancellationToken)
+    private static async Task<OAuthConfig?> LoadOAuthConfigAsync(
+        string jsonConfigPath,
+        CancellationToken cancellationToken
+    )
     {
         var jsonContent = await File.ReadAllTextAsync(jsonConfigPath, cancellationToken);
-        var oauthConfig = JsonSerializer.Deserialize<OAuthConfig>(jsonContent,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var oauthConfig = JsonSerializer.Deserialize<OAuthConfig>(
+            jsonContent,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
 
         if (oauthConfig is null)
         {
