@@ -3,15 +3,20 @@ using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
 
-public static class TextReport
+public static class SchemaTextReport
 {
-    public static string Create(SchemaType schemaType)
+    public static string Create(SchemaType schemaType, bool validations)
     {
         var sb = new StringBuilder();
 
         foreach (var rootType in schemaType.RootTypes)
         {
             CreateRootType(sb, rootType);
+        }
+        
+        if (validations)
+        {
+            sb.Append(ValidationsTextReport.Create(schemaType));
         }
 
         return sb.ToString();

@@ -32,14 +32,38 @@ public sealed class CommandLineOptions
     )]
     public string? HeaderToken { get; set; }
 
-    [Option('o', "oauth", Required = false, HelpText = "OAuth2 configuration for token retrieval.")]
+    [Option( "oauth", Required = false, HelpText = "OAuth2 configuration for token retrieval.")]
     public string? OAuthConfig { get; set; }
 
     [Option(
-        'p',
+        'o',
         "output",
         Required = false,
         HelpText = "Path to output file where results will be written."
     )]
     public string? OutputPath { get; set; }
+    
+    [Option(
+        'p',
+        "policies",
+        Required = false,
+        HelpText = "comma-separated list of policies to apply to the schema."
+    )]
+    public string? Policies { get; set; }
+    
+    [Option(
+        'r',
+        "roles",
+        Required = false,
+        HelpText = "comma-separated list of roles to apply to the schema."
+    )]
+    public string? Roles { get; set; }
+    
+    [Option(
+        "validations",
+        Required = false,
+        HelpText = "print out any validation errors",
+        Default = false
+    )]
+    public bool Validations { get; set; }
 }
