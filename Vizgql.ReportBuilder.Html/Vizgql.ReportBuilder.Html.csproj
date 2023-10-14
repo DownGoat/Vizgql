@@ -4,7 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Version>0.0.2</Version>
+        <Version>0.0.3</Version>
         <Title>Vizgql.ReportBuilder.Html</Title>
         <Description>The goal of this project is to have a tool for vizualizing and testing
             authorization for GraphQL schemas. It is not always clear and easy to vizualize
@@ -16,8 +16,8 @@
         <PackageReleaseNotes>Test release</PackageReleaseNotes>
         <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <AssemblyVersion>0.0.2</AssemblyVersion>
-        <FileVersion>0.0.2</FileVersion>
+        <AssemblyVersion>0.0.3</AssemblyVersion>
+        <FileVersion>0.0.3</FileVersion>
     </PropertyGroup>
 
 
