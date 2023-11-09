@@ -52,6 +52,12 @@
       <None Update="schemas\policies\no-authorization.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="schemas\roles\spelling-mistake-constraint.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\policies\spelling-mistake-constraint.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
