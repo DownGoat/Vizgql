@@ -13,6 +13,7 @@ public sealed class SchemaAuthorizationShould
     private const string MissingRootAuthDirectiveSchema = "missing-root-auth-directive.graphql";
     private const string MissingRoleForFieldSchema = "missing-role-for-field.graphql";
     private const string MissingFieldAuthorizationSchema = "missing-field-authorization.graphql";
+    private const string SpellingMistakeSchema = "spelling-mistake-constraint.graphql";
 
     private const string MissingFieldAuthorizationRootHasConstraintsSchema =
         "missing-field-authorization-root-has-constraints.graphql";
@@ -55,6 +56,10 @@ public sealed class SchemaAuthorizationShould
                     {
                         NoAuthorizationSchema,
                         File.ReadAllText(Path.Combine(Schemas, RolesDir, NoAuthorizationSchema))
+                    },
+                    {
+                        SpellingMistakeSchema,
+                        File.ReadAllText(Path.Combine(Schemas, RolesDir, SpellingMistakeSchema))
                     }
                 }
             },
@@ -93,6 +98,10 @@ public sealed class SchemaAuthorizationShould
                     {
                         NoAuthorizationSchema,
                         File.ReadAllText(Path.Combine(Schemas, PoliciesDir, NoAuthorizationSchema))
+                    },
+                    {
+                        SpellingMistakeSchema,
+                        File.ReadAllText(Path.Combine(Schemas, PoliciesDir, SpellingMistakeSchema))
                     }
                 }
             }
@@ -272,5 +281,17 @@ public sealed class SchemaAuthorizationShould
                 Is.True
             );
         });
+    }
+
+    [TestCase(RolesDir)]
+    [TestCase(PoliciesDir)]
+    public void DetectPotentialSpellingMistake(string dir)
+    {
+        var schema = SchemasByDir[dir][SpellingMistakeSchema];
+
+        var schemaType = SchemaParser.Parse(schema);
+        var validations = schemaType.Validate();
+
+        Assert.That(validations.All(x => x.Type == ConstraintSpellingMistake), Is.EqualTo(true));
     }
 }

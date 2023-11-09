@@ -1,5 +1,4 @@
-﻿using System.Security.AccessControl;
-using System.Text;
+﻿using System.Text;
 using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
@@ -22,7 +21,11 @@ public static class SchemaTextReport
 
         if (options.Roles != null || options.Policies != null)
         {
-            CreateConstraintsFilter(schemaType, new Constraints(options.Roles, options.Policies), sb);
+            CreateConstraintsFilter(
+                schemaType,
+                new Constraints(options.Roles, options.Policies),
+                sb
+            );
         }
 
         if (options.UniqueConstraints)
@@ -35,31 +38,38 @@ public static class SchemaTextReport
 
     private static void CreateUniqueConstraints(SchemaType schemaType, StringBuilder sb)
     {
-        var roles = schemaType.RootTypes
-            .SelectMany(rt => rt.Fields)
-            .SelectMany(ft => ft.Directives)
-            .SelectMany(d => d.Roles)
-            .Union(schemaType.RootTypes
-                .SelectMany(r => r.Directives.SelectMany(rr => rr.Roles)))
-            .Distinct();
+        var schemaUniqueConstraints = new SchemaUniqueConstraints(schemaType);
 
-        var policies = schemaType.RootTypes
-            .SelectMany(rt => rt.Fields)
-            .SelectMany(ft => ft.Directives)
-            .Select(d => d.Policy)
-            .Union(schemaType.RootTypes
-                .SelectMany(r => r.Directives.Select(rr => rr.Policy)))
-            .Distinct();
-        
         sb.Append("\nUnique constraints:\n");
         sb.Append("Roles: ");
-        sb.Append(string.Join(",", roles));
+        sb.Append(string.Join(",", schemaUniqueConstraints.Roles));
+
+        if (schemaUniqueConstraints.RolesDistances.Any())
+        {
+            sb.Append('\n');
+            sb.Append("These roles are similar and might be spelling mistakes: ");
+            sb.Append(string.Join(", ", schemaUniqueConstraints.RolesDistances.Select(x => x.c1)));
+        }
+
         sb.Append('\n');
         sb.Append("Policies: ");
-        sb.Append(string.Join(",", policies));
+        sb.Append(string.Join(",", schemaUniqueConstraints.Policies));
+
+        if (schemaUniqueConstraints.PoliciesDistances.Any())
+        {
+            sb.Append('\n');
+            sb.Append("These policies are similar and might be spelling mistakes: ");
+            sb.Append(
+                string.Join(", ", schemaUniqueConstraints.PoliciesDistances.Select(x => x.c1))
+            );
+        }
     }
 
-    private static void CreateConstraintsFilter(SchemaType schemaType, Constraints constraints, StringBuilder sb)
+    private static void CreateConstraintsFilter(
+        SchemaType schemaType,
+        Constraints constraints,
+        StringBuilder sb
+    )
     {
         sb.Append("\nConstraints filter:\n");
 
@@ -100,7 +110,7 @@ public static class SchemaTextReport
                 CreateFieldType(sb, "    ", '├', fieldType);
             }
         }
-        
+
         if (missingRootTypes.Count == 0 && missingFieldsByRootType.Count == 0)
         {
             sb.Append("No missing constraints found.\n");
@@ -182,19 +192,27 @@ public static class SchemaTextReport
         foreach (var validationAssertion in validations)
         {
             sb.Append(
-                $"{validationAssertion.Name} - {ValidationAssertionTypeDescriptions.ToString(validationAssertion.Type)}\n");
+                $"{validationAssertion.Name} - {ValidationAssertionTypeDescriptions.ToString(validationAssertion.Type)}\n"
+            );
         }
 
         return sb.ToString();
     }
 }
 
-public readonly record struct SchemaTextReportOptions(bool Validations, string?[] Roles, string?[] Policies,
-    bool UniqueConstraints);
+public readonly record struct SchemaTextReportOptions(
+    bool Validations,
+    string?[] Roles,
+    string?[] Policies,
+    bool UniqueConstraints
+);
 
 public record Constraints(string[]? Roles, string[]? Policies)
 {
-    public bool IsAuthorized(bool hasAuthorization, AuthorizationDirective[] authorizationDirectives)
+    public bool IsAuthorized(
+        bool hasAuthorization,
+        AuthorizationDirective[] authorizationDirectives
+    )
     {
         if (!hasAuthorization || authorizationDirectives.All(ad => ad.IsEmpty()))
         {

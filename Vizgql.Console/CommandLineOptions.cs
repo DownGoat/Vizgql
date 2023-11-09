@@ -32,7 +32,7 @@ public sealed class CommandLineOptions
     )]
     public string? HeaderToken { get; set; }
 
-    [Option( "oauth", Required = false, HelpText = "OAuth2 configuration for token retrieval.")]
+    [Option("oauth", Required = false, HelpText = "OAuth2 configuration for token retrieval.")]
     public string? OAuthConfig { get; set; }
 
     [Option(
@@ -42,7 +42,7 @@ public sealed class CommandLineOptions
         HelpText = "Path to output file where results will be written."
     )]
     public string? OutputPath { get; set; }
-    
+
     [Option(
         'p',
         "policies",
@@ -50,7 +50,7 @@ public sealed class CommandLineOptions
         HelpText = "comma-separated list of policies to apply to the schema."
     )]
     public string? Policies { get; set; }
-    
+
     [Option(
         'r',
         "roles",
@@ -58,7 +58,7 @@ public sealed class CommandLineOptions
         HelpText = "comma-separated list of roles to apply to the schema."
     )]
     public string? Roles { get; set; }
-    
+
     [Option(
         "validations",
         Required = false,
@@ -66,7 +66,7 @@ public sealed class CommandLineOptions
         Default = false
     )]
     public bool Validations { get; set; }
-    
+
     [Option(
         "unique-constraints",
         Required = false,
@@ -79,7 +79,7 @@ public sealed class CommandLineOptions
     {
         return Roles?.Split(',');
     }
-    
+
     public string[]? GetPolicies()
     {
         return Policies?.Split(',');
