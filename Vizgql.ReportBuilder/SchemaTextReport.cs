@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Spectre.Console;
 using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
@@ -107,7 +108,7 @@ public static class SchemaTextReport
             sb.Append($"\n{rootType.Name}:\n");
             foreach (var fieldType in fieldTypes)
             {
-                CreateFieldType(sb, "    ", '├', fieldType);
+                // CreateFieldType(sb, "    ", '├', fieldType);
             }
         }
 
@@ -119,46 +120,34 @@ public static class SchemaTextReport
 
     private static void CreateRootType(StringBuilder sb, RootType rootType)
     {
-        sb.Append(rootType.Name);
+        var rootName = rootType.Name;
         if (rootType.HasAuthorization)
         {
-            sb.Append(' ');
-            sb.Append(CreateAuthorizationDirectives(rootType.Directives));
+            var directives = CreateAuthorizationDirectives(rootType.Directives);
+            rootName = $"[magenta1]{rootName}[/] {directives}";
         }
+        var root = new Tree(rootName);
 
-        sb.Append('\n');
-
-        for (var i = 0; i < rootType.Fields.Length; i++)
+        foreach (var field in rootType.Fields)
         {
-            const string indent = "    ";
-            var boxChar = i < rootType.Fields.Length - 1 ? '├' : '└';
-            var field = rootType.Fields[i];
-
-            CreateFieldType(sb, indent, boxChar, field);
+            root.AddNode(CreateFieldType(field));
         }
 
-        sb.Append('\n');
+        var rule = new Rule();
+        AnsiConsole.Write(root);
+        AnsiConsole.Write(rule);
     }
 
-    private static void CreateFieldType(
-        StringBuilder sb,
-        string indent,
-        char boxChar,
-        FieldType field
-    )
+    private static string CreateFieldType(FieldType field)
     {
-        sb.Append(indent);
-        sb.Append(boxChar);
-        sb.Append(' ');
-        sb.Append(field.Name);
-        sb.Append(' ');
-
+        var fieldName = $"[magenta1]{field.Name}[/]";
         if (field.HasAuthorization)
         {
-            sb.Append(CreateAuthorizationDirectives(field.Directives));
+            var directives = CreateAuthorizationDirectives(field.Directives);
+            fieldName = $"{fieldName} {directives}";
         }
 
-        sb.Append('\n');
+        return fieldName;
     }
 
     private static string CreateAuthorizationDirectives(AuthorizationDirective[] roles)
@@ -172,31 +161,42 @@ public static class SchemaTextReport
 
         if (directive.Roles.Length != 0)
         {
-            var roles = string.Join(", ", directive.Roles.Select(x => $"\"{x}\""));
-            content = $"(roles: [ {roles} ])";
+            var roles = string.Join(", ", directive.Roles.Select(x => $"[green]\"{x}\"[/]"));
+            content = $"([mediumpurple1]roles[/]: [[ {roles} ]])";
         }
 
         if (!string.IsNullOrEmpty(directive.Policy))
         {
-            content = $"(policy: \"{directive.Policy}\")";
+            content = $"([mediumpurple1]policy[/]: [green]\"{directive.Policy}\"[/])";
         }
 
-        return "@authorize" + content;
+        return "[yellow3_1]@authorize" + content + "[/]";
     }
 
-    private static string CreateValidations(SchemaType schemaType, StringBuilder sb)
+    private static void CreateValidations(SchemaType schemaType, StringBuilder sb)
     {
         var validations = schemaType.Validate();
 
-        sb.Append("\nValidations errors:\n");
-        foreach (var validationAssertion in validations)
-        {
-            sb.Append(
-                $"{validationAssertion.Name} - {ValidationAssertionTypeDescriptions.ToString(validationAssertion.Type)}\n"
-            );
-        }
+        if (!validations.Any())
+            return;
 
-        return sb.ToString();
+        var rows = new Rows(
+            validations.Select(
+                v =>
+                    new Markup(
+                        $"{v.Name} - [hotpink]{ValidationAssertionTypeDescriptions.ToString(v.Type)}[/]"
+                    )
+            )
+        );
+
+        var panel = new Panel(rows)
+        {
+            Header = new PanelHeader("[red]Validation errors[/]"),
+            Expand = true,
+            BorderStyle = new Style(Color.Red)
+        };
+
+        AnsiConsole.Write(panel);
     }
 }
 
