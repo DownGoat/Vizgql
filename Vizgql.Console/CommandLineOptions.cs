@@ -32,17 +32,6 @@ public sealed class CommandLineOptions
     )]
     public string? HeaderToken { get; set; }
 
-    [Option("oauth", Required = false, HelpText = "OAuth2 configuration for token retrieval.")]
-    public string? OAuthConfig { get; set; }
-
-    [Option(
-        'o',
-        "output",
-        Required = false,
-        HelpText = "Path to output file where results will be written."
-    )]
-    public string? OutputPath { get; set; }
-
     [Option(
         'p',
         "policies",

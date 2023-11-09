@@ -12,11 +12,11 @@ public static class SchemaFromHttp
     {
         using var httpClient = new HttpClient();
 
-        if (!string.IsNullOrEmpty(options.OAuthConfig))
-        {
-            options.HeaderName ??= "Authorization";
-            options.HeaderToken = await GetOauthTokenAsync(options, cancellationToken);
-        }
+        // if (!string.IsNullOrEmpty(options.OAuthConfig))
+        // {
+        //     options.HeaderName ??= "Authorization";
+        //     options.HeaderToken = await GetOauthTokenAsync(options, cancellationToken);
+        // }
 
         if (!string.IsNullOrEmpty(options.HeaderName) && !string.IsNullOrEmpty(options.HeaderToken))
         {
@@ -26,13 +26,13 @@ public static class SchemaFromHttp
         return await httpClient.GetStringAsync(options.Url, cancellationToken);
     }
 
-    private static async Task<string> GetOauthTokenAsync(
-        CommandLineOptions options,
-        CancellationToken cancellationToken
-    )
-    {
-        return await FetchTokenAsync(options.OAuthConfig!, cancellationToken);
-    }
+    // private static async Task<string> GetOauthTokenAsync(
+    //     CommandLineOptions options,
+    //     CancellationToken cancellationToken
+    // )
+    // {
+    //     return await FetchTokenAsync(options.OAuthConfig!, cancellationToken);
+    // }
 
     private static async Task<string> FetchTokenAsync(
         string optionsOAuthConfig,

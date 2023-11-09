@@ -25,7 +25,7 @@ static async Task HandleOptionsAsync(
     }
 
     var schemaType = SchemaParser.Parse(textToParse);
-    var textReport = SchemaTextReport.Create(
+    SchemaTextReport.Create(
         schemaType,
         new SchemaTextReportOptions(
             options.Validations,
@@ -34,13 +34,6 @@ static async Task HandleOptionsAsync(
             options.UniqueConstraints
         )
     );
-
-    Console.WriteLine(textReport);
-
-    if (!string.IsNullOrEmpty(options.OutputPath))
-    {
-        File.WriteAllText(options.OutputPath, textReport);
-    }
 }
 
 await Parser.Default
