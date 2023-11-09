@@ -1,77 +1,71 @@
 ﻿using System.Text;
+using Spectre.Console;
 using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
 
 public static class SchemaTextReport
 {
-    public static string Create(SchemaType schemaType, SchemaTextReportOptions options)
+    public static void Create(SchemaType schemaType, SchemaTextReportOptions options)
     {
-        var sb = new StringBuilder();
-
+        var overviewTree = new Tree("Schema");
         foreach (var rootType in schemaType.RootTypes)
         {
-            CreateRootType(sb, rootType);
+            CreateRootType(overviewTree, rootType);
         }
+
+        var rule = new Rule();
+        AnsiConsole.Write(overviewTree);
+        AnsiConsole.Write(rule);
 
         if (options.Validations)
         {
-            CreateValidations(schemaType, sb);
+            CreateValidations(schemaType);
+            AnsiConsole.Write(rule);
         }
 
         if (options.Roles != null || options.Policies != null)
         {
-            CreateConstraintsFilter(
-                schemaType,
-                new Constraints(options.Roles, options.Policies),
-                sb
-            );
+            CreateConstraintsFilter(schemaType, new Constraints(options.Roles, options.Policies));
+            AnsiConsole.Write(rule);
         }
 
         if (options.UniqueConstraints)
         {
-            CreateUniqueConstraints(schemaType, sb);
+            CreateUniqueConstraints(schemaType);
+            AnsiConsole.Write(rule);
         }
-
-        return sb.ToString();
     }
 
-    private static void CreateUniqueConstraints(SchemaType schemaType, StringBuilder sb)
+    private static void CreateUniqueConstraints(SchemaType schemaType)
     {
         var schemaUniqueConstraints = new SchemaUniqueConstraints(schemaType);
 
-        sb.Append("\nUnique constraints:\n");
-        sb.Append("Roles: ");
-        sb.Append(string.Join(",", schemaUniqueConstraints.Roles));
-
-        if (schemaUniqueConstraints.RolesDistances.Any())
+        var roles = string.Join(",", schemaUniqueConstraints.Roles.Select(x => $"[green]{x}[/]"));
+        var rolesPanel = new Panel(roles)
         {
-            sb.Append('\n');
-            sb.Append("These roles are similar and might be spelling mistakes: ");
-            sb.Append(string.Join(", ", schemaUniqueConstraints.RolesDistances.Select(x => x.c1)));
-        }
+            Expand = true,
+            Header = new PanelHeader("Unique Roles")
+        };
 
-        sb.Append('\n');
-        sb.Append("Policies: ");
-        sb.Append(string.Join(",", schemaUniqueConstraints.Policies));
+        AnsiConsole.Write(rolesPanel);
 
-        if (schemaUniqueConstraints.PoliciesDistances.Any())
+        var policies = string.Join(
+            ",",
+            schemaUniqueConstraints.Policies.Select(x => $"[green]{x}[/]")
+        );
+        var policiesPanel = new Panel(policies)
         {
-            sb.Append('\n');
-            sb.Append("These policies are similar and might be spelling mistakes: ");
-            sb.Append(
-                string.Join(", ", schemaUniqueConstraints.PoliciesDistances.Select(x => x.c1))
-            );
-        }
+            Expand = true,
+            Header = new PanelHeader("Unique Policies")
+        };
+
+        AnsiConsole.Write(policiesPanel);
     }
 
-    private static void CreateConstraintsFilter(
-        SchemaType schemaType,
-        Constraints constraints,
-        StringBuilder sb
-    )
+    private static void CreateConstraintsFilter(SchemaType schemaType, Constraints constraints)
     {
-        sb.Append("\nConstraints filter:\n");
+        var tree = new Tree("Constraints filter");
 
         var missingRootTypes = new List<RootType>();
         var missingFieldsByRootType = new Dictionary<RootType, List<FieldType>>();
@@ -97,68 +91,65 @@ public static class SchemaTextReport
             }
         }
 
-        foreach (var missingRootType in missingRootTypes)
+        if (missingRootTypes.Any())
         {
-            sb.Append($"Missing authorization for root type {missingRootType.Name}\n");
+            var rows = new Rows(missingRootTypes.Select(m => new Markup($"[red]{m.Name}[/]")));
+            var missingRootTypesPanel = new Panel(rows)
+            {
+                Header = new PanelHeader("Unauthorized root types"),
+                BorderStyle = new Style(Color.HotPink),
+                Expand = true
+            };
+            AnsiConsole.Write(missingRootTypesPanel);
         }
 
         foreach (var (rootType, fieldTypes) in missingFieldsByRootType)
         {
-            sb.Append($"\n{rootType.Name}:\n");
-            foreach (var fieldType in fieldTypes)
-            {
-                CreateFieldType(sb, "    ", '├', fieldType);
-            }
+            var withMissing = rootType with { Fields = fieldTypes.ToArray() };
+            CreateRootType(tree, withMissing);
         }
 
         if (missingRootTypes.Count == 0 && missingFieldsByRootType.Count == 0)
         {
-            sb.Append("No missing constraints found.\n");
+            var panel = new Panel(new Markup($"[green]No missing constraints found.[/]"))
+            {
+                BorderStyle = new Style(Color.Green)
+            };
+            AnsiConsole.Write(panel);
         }
+
+        if (missingFieldsByRootType.Any())
+            AnsiConsole.Write(tree);
     }
 
-    private static void CreateRootType(StringBuilder sb, RootType rootType)
+    private static void CreateRootType(Tree tree, RootType rootType)
     {
-        sb.Append(rootType.Name);
+        var rootName = rootType.Name;
         if (rootType.HasAuthorization)
         {
-            sb.Append(' ');
-            sb.Append(CreateAuthorizationDirectives(rootType.Directives));
+            var directives = CreateAuthorizationDirectives(rootType.Directives);
+            rootName = $"[magenta1]{rootName}[/] {directives}";
         }
+        var root = new Tree(rootName);
 
-        sb.Append('\n');
-
-        for (var i = 0; i < rootType.Fields.Length; i++)
+        foreach (var field in rootType.Fields)
         {
-            const string indent = "    ";
-            var boxChar = i < rootType.Fields.Length - 1 ? '├' : '└';
-            var field = rootType.Fields[i];
-
-            CreateFieldType(sb, indent, boxChar, field);
+            root.AddNode(CreateFieldType(field));
         }
 
-        sb.Append('\n');
+        tree.AddNode(root);
     }
 
-    private static void CreateFieldType(
-        StringBuilder sb,
-        string indent,
-        char boxChar,
-        FieldType field
-    )
+    private static string CreateFieldType(FieldType field)
     {
-        sb.Append(indent);
-        sb.Append(boxChar);
-        sb.Append(' ');
-        sb.Append(field.Name);
-        sb.Append(' ');
-
+        var fieldName = $"[magenta1]{field.Name}[/]";
         if (field.HasAuthorization)
         {
-            sb.Append(CreateAuthorizationDirectives(field.Directives));
+            var directives = CreateAuthorizationDirectives(field.Directives);
+            fieldName = $"{fieldName} {directives}";
         }
 
-        sb.Append('\n');
+        return fieldName;
     }
 
     private static string CreateAuthorizationDirectives(AuthorizationDirective[] roles)
@@ -172,31 +163,42 @@ public static class SchemaTextReport
 
         if (directive.Roles.Length != 0)
         {
-            var roles = string.Join(", ", directive.Roles.Select(x => $"\"{x}\""));
-            content = $"(roles: [ {roles} ])";
+            var roles = string.Join(", ", directive.Roles.Select(x => $"[green]\"{x}\"[/]"));
+            content = $"([mediumpurple1]roles[/]: [[ {roles} ]])";
         }
 
         if (!string.IsNullOrEmpty(directive.Policy))
         {
-            content = $"(policy: \"{directive.Policy}\")";
+            content = $"([mediumpurple1]policy[/]: [green]\"{directive.Policy}\"[/])";
         }
 
-        return "@authorize" + content;
+        return "[yellow3_1]@authorize" + content + "[/]";
     }
 
-    private static string CreateValidations(SchemaType schemaType, StringBuilder sb)
+    private static void CreateValidations(SchemaType schemaType)
     {
         var validations = schemaType.Validate();
 
-        sb.Append("\nValidations errors:\n");
-        foreach (var validationAssertion in validations)
-        {
-            sb.Append(
-                $"{validationAssertion.Name} - {ValidationAssertionTypeDescriptions.ToString(validationAssertion.Type)}\n"
-            );
-        }
+        if (!validations.Any())
+            return;
 
-        return sb.ToString();
+        var rows = new Rows(
+            validations.Select(
+                v =>
+                    new Markup(
+                        $"{v.Name} - [hotpink]{ValidationAssertionTypeDescriptions.ToString(v.Type)}[/]"
+                    )
+            )
+        );
+
+        var panel = new Panel(rows)
+        {
+            Header = new PanelHeader("[red]Validation errors[/]"),
+            Expand = true,
+            BorderStyle = new Style(Color.Red)
+        };
+
+        AnsiConsole.Write(panel);
     }
 }
 
