@@ -40,4 +40,4 @@ vizgql -u [URL]
 ```
 PS C:\Users\User> vizgql -u https://hotchocolateschema.com/graphql?sdl --validations --unique-constraints
 ```
-![Output when downloading sdl from a URL. Using the validations and unique-constraints option.](docs\images\example.png "Example output")
+![Output when downloading sdl from a URL. Using the validations and unique-constraints option.](docs/images/example.png "Example output")
