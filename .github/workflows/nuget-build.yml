@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'release-*'
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   build:
