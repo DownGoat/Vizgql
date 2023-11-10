@@ -1,44 +1,43 @@
-# Goals
-The goal of this project is to have a tool for vizualizing and testing authorization for GraphQL schemas. It is not always clear and easy to vizualize how authorization constraints (roles/policies) are applied fields. This projects aims to give you tools to automatically test this, and genrate vizualisations.
+# Vizgql.Console
 
-# Vizgql.Core
-This package contains the logic for parsing and finding validation errors for schemas.
+Vizgql.Console is a command-line interface tool designed for parsing GraphQL SDL documents. It provides an overview of fields and their associated authorization directives, along with listing different roles/policies the directives may have.
+
+## Features
+
+- Parse GraphQL SDL documents from a file or URL.
+- Display fields with authorization directives.
+- List roles and policies linked to the authorization directives.
+- Highlight validation errors and unique constraints in the schema.
 
 ## Installation
-`dotnet add package Vizgql.Core`
 
-## In unit tests
-We can assert validation of a schema with the `SchemaAuthorization` class. It exposes `AssertValidate` which validates the schema sdl. You can configure some of it behaviour by also passing a `ValidationOptions` object. `AssertValidate` will throw exceptions if the schema fails some validation check. The package is not specific to any testing framework. 
+`dotnet tool install Vizgql.Console --global`
 
-Example test
-```
-[Test]
-public void ExampleTest()
-{
-    SchemaAuthorization.AssertValidate(
-                sdlSchema,
-                new ValidationOptions(AllowFieldWithoutAuthorization: true)
-            );
-}
-```
-## Other
-You can use the `Validate` method to find all warnings for the schema. 
+## Usage
 
-## ValidationOptions
+To use Vizgql.Console, execute the following commands with the appropriate options:
+
 ```
-public sealed record ValidationOptions(
-    bool AllowRootTypeWithoutAuthorization = false,
-    bool AllowRootTypeEmptyAuthorize = true,
-    bool AllowFieldWithoutAuthorization = false
-);
+vizgql -f [path_to_file]
+vizgql -u [URL]
 ```
 
-### AllowRootTypeWithoutAuthorization
-If this is enabled, validation will pass for missing `@authorize` directive on root types such as `Query` and `Mutation`.
+### Options
 
-### AllowRootTypeEmptyAuthorize
-If enabled validation will pass for missing constraints such as roles/policies on root types such as `Query` and `Mutation`.
+- `-f, --file`: Path to the file to be parsed.
+- `-u, --url`: URL from which text will be downloaded for parsing.
+- `-n, --header-name`: HTTP header name for authentication (Default: Authorization).
+- `-t, --header-token`: HTTP header token for authentication.
+- `-p, --policies`: Comma-separated list of policies to apply to the schema.
+- `-r, --roles`: Comma-separated list of roles to apply to the schema.
+- `--validations`: Print out any validation errors (Default: false).
+- `--unique-constraints`: Prints all the unique constraints as a comma-separated list.
+- `--help`: Display help screen.
+- `--version`: Display version information.
 
-### AllowFieldWithoutAuthorization
-If enabled validation will pass for missing `@authorize` directive on fields.
+### Example
 
+```
+PS C:\Users\User> vizgql -u https://hotchocolateschema.com/graphql?sdl --validations --unique-constraints
+```
+![Output when downloading sdl from a URL. Using the validations and unique-constraints option.](docs\images\example.png "Example output")
