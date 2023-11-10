@@ -18,9 +18,15 @@ jobs:
     - name: Update Assembly Version
       run: |
         version=${{ steps.version.outputs.version }}
-        # Inline script or call to external script
-        chmod +x update_versions.sh
-        ./update_versions.sh "$version"
+        echo "Updating .csproj files to version $version"
+
+        for file in $(find . -name '*.csproj'); do
+          sed -i "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>$version</AssemblyVersion>|g" "$file"
+          sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>$version</FileVersion>|g" "$file"
+          sed -i "s|<Version>.*</Version>|<Version>$version</Version>|g" "$file"
+        done
+
+        echo "Version update complete"
 
     - name: Build and publish NuGet package
       run: |
