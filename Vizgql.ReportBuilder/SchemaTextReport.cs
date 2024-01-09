@@ -71,7 +71,11 @@ public static class SchemaTextReport
         var notAuthorizedTypes = ConstraintsFilter.GetNotAuthorizedTypes(schemaType, constraints);
         if (notAuthorizedTypes.NotAuthorizedRootTypes.Any())
         {
-            var rows = new Rows(notAuthorizedTypes.NotAuthorizedRootTypes.Select(m => new Markup($"[red]{m.Name}[/]")));
+            var rows = new Rows(
+                notAuthorizedTypes.NotAuthorizedRootTypes.Select(
+                    m => new Markup($"[red]{m.Name}[/]")
+                )
+            );
             var missingRootTypesPanel = new Panel(rows)
             {
                 Header = new PanelHeader("Unauthorized root types"),
@@ -80,14 +84,17 @@ public static class SchemaTextReport
             };
             AnsiConsole.Write(missingRootTypesPanel);
         }
-        
+
         foreach (var (rootType, fieldTypes) in notAuthorizedTypes.NotAuthorizedFieldsByRootType)
         {
             var withMissing = rootType with { Fields = fieldTypes.ToArray() };
             CreateRootType(tree, withMissing);
         }
-        
-        if (notAuthorizedTypes.NotAuthorizedRootTypes.Count == 0 && notAuthorizedTypes.NotAuthorizedFieldsByRootType.Count == 0)
+
+        if (
+            notAuthorizedTypes.NotAuthorizedRootTypes.Count == 0
+            && notAuthorizedTypes.NotAuthorizedFieldsByRootType.Count == 0
+        )
         {
             var panel = new Panel(new Markup($"[green]No missing constraints found.[/]"))
             {
@@ -95,7 +102,7 @@ public static class SchemaTextReport
             };
             AnsiConsole.Write(panel);
         }
-        
+
         if (notAuthorizedTypes.NotAuthorizedFieldsByRootType.Any())
             AnsiConsole.Write(tree);
     }
@@ -186,5 +193,3 @@ public readonly record struct SchemaTextReportOptions(
     string?[] Policies,
     bool UniqueConstraints
 );
-
-
