@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Vizgql.Core\Vizgql.Core.csproj" />
+      <ProjectReference Include="..\Vizgql.ReportBuilder.Html\Vizgql.ReportBuilder.Html.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -29,6 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="BlazorTemplater" Version="1.5.1" />
       <PackageReference Include="Spectre.Console" Version="0.48.0" />
       <PackageReference Include="Spectre.Console.Analyzer" Version="0.48.0">
         <PrivateAssets>all</PrivateAssets>

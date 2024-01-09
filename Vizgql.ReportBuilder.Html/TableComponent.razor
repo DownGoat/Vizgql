@@ -1,0 +1,43 @@
+﻿@using Vizgql.ReportBuilder.Html.Models
+
+<table>
+    <thead>
+    <tr>
+        <th class="header header__name">Name</th>
+        <th class="header header__hasAuthorization">Has Authorization</th>
+        @foreach (var header in Model.ConstraintHeaders)
+        {
+            <th class="header header__constraint">@header.Name</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var row in Model.Rows)
+    {
+        <tr class="row">
+            <td class="row row__name">@row.Name</td>
+            <td class="row row__hasAuthorization">
+                @if (row.HasAuthorization)
+                {
+                    <CheckmarkIcon />
+                }
+                else
+                {
+                    <CrossIcon />
+                }
+            </td>
+
+            @foreach (var constraint in row.Constraints)
+            {
+                <td class="row row__constraint">@constraint</td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+@code {
+    [Parameter]
+    public required TableComponentModel Model { get; set; }
+}
