@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>0.0.4</Version>
@@ -29,12 +29,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spectre.Console" Version="0.47.0" />
-      <PackageReference Include="Spectre.Console.Analyzer" Version="0.47.0">
+      <PackageReference Include="Spectre.Console" Version="0.48.0" />
+      <PackageReference Include="Spectre.Console.Analyzer" Version="0.48.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Spectre.Console.Cli" Version="0.47.0" />
+      <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
     </ItemGroup>
 
 </Project>
