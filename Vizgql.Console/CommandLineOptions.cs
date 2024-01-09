@@ -64,6 +64,13 @@ public sealed class CommandLineOptions
     )]
     public bool UniqueConstraints { get; set; }
 
+    [Option(
+        "format",
+        Default = OutputFormat.Ansi,
+        HelpText = "Set the output format. Options: Ansi, Csv"
+    )]
+    public OutputFormat OutputFormat { get; set; }
+
     public string[]? GetRoles()
     {
         return Roles?.Split(',');

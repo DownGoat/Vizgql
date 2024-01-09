@@ -25,15 +25,29 @@ static async Task HandleOptionsAsync(
     }
 
     var schemaType = SchemaParser.Parse(textToParse);
-    SchemaTextReport.Create(
-        schemaType,
-        new SchemaTextReportOptions(
-            options.Validations,
-            options.GetRoles(),
-            options.GetPolicies(),
-            options.UniqueConstraints
-        )
-    );
+
+    switch (options.OutputFormat)
+    {
+        case OutputFormat.Ansi:
+            SchemaTextReport.Create(
+                schemaType,
+                new SchemaTextReportOptions(
+                    options.Validations,
+                    options.GetRoles() ?? Array.Empty<string>(),
+                    options.GetPolicies() ?? Array.Empty<string>(),
+                    options.UniqueConstraints
+                )
+            );
+            break;
+        case OutputFormat.Csv:
+            CsvReport.Create(schemaType);
+            break;
+        case OutputFormat.Html:
+            HtmlReport.Create(schemaType);
+            break;
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
 }
 
 await Parser.Default

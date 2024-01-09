@@ -1,0 +1,43 @@
+﻿@using Vizgql.ReportBuilder.Html.Models
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charSet="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>Schema Report</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            font-family: 'Fira Sans', sans-serif;
+            background-color: #F8F6F0;
+        }
+        th {
+            text-align: left;
+            padding: 14px 8px;
+            background-color: #e1dde9;
+        }
+        .row {
+            padding:  4px 0 4px 8px;
+        }
+        
+        .row__name {
+            background-color: #e1dde9;
+        }
+        
+        .row__constraint:nth-child(odd) {
+            background-color: #efefef;
+        }
+    </style>
+</head>
+    <body>
+        <TableComponent Model="@TableComponentModel"/>
+    </body>
+</html>
+
+@code {
+    [Parameter] public required TableComponentModel TableComponentModel { get; set; }
+}
