@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Spectre.Console;
+using Vizgql.Core;
 using Vizgql.Core.Types;
 
 namespace Vizgql.ReportBuilder;
@@ -67,33 +68,10 @@ public static class SchemaTextReport
     {
         var tree = new Tree("Constraints filter");
 
-        var missingRootTypes = new List<RootType>();
-        var missingFieldsByRootType = new Dictionary<RootType, List<FieldType>>();
-        foreach (var rootType in schemaType.RootTypes)
+        var notAuthorizedTypes = ConstraintsFilter.GetNotAuthorizedTypes(schemaType, constraints);
+        if (notAuthorizedTypes.NotAuthorizedRootTypes.Any())
         {
-            if (!constraints.IsAuthorized(rootType.HasAuthorization, rootType.Directives))
-            {
-                missingRootTypes.Add(rootType);
-                continue;
-            }
-
-            foreach (var fieldType in rootType.Fields)
-            {
-                if (!constraints.IsAuthorized(fieldType.HasAuthorization, fieldType.Directives))
-                {
-                    if (!missingFieldsByRootType.ContainsKey(rootType))
-                    {
-                        missingFieldsByRootType.Add(rootType, new List<FieldType>());
-                    }
-
-                    missingFieldsByRootType[rootType].Add(fieldType);
-                }
-            }
-        }
-
-        if (missingRootTypes.Any())
-        {
-            var rows = new Rows(missingRootTypes.Select(m => new Markup($"[red]{m.Name}[/]")));
+            var rows = new Rows(notAuthorizedTypes.NotAuthorizedRootTypes.Select(m => new Markup($"[red]{m.Name}[/]")));
             var missingRootTypesPanel = new Panel(rows)
             {
                 Header = new PanelHeader("Unauthorized root types"),
@@ -102,14 +80,14 @@ public static class SchemaTextReport
             };
             AnsiConsole.Write(missingRootTypesPanel);
         }
-
-        foreach (var (rootType, fieldTypes) in missingFieldsByRootType)
+        
+        foreach (var (rootType, fieldTypes) in notAuthorizedTypes.NotAuthorizedFieldsByRootType)
         {
             var withMissing = rootType with { Fields = fieldTypes.ToArray() };
             CreateRootType(tree, withMissing);
         }
-
-        if (missingRootTypes.Count == 0 && missingFieldsByRootType.Count == 0)
+        
+        if (notAuthorizedTypes.NotAuthorizedRootTypes.Count == 0 && notAuthorizedTypes.NotAuthorizedFieldsByRootType.Count == 0)
         {
             var panel = new Panel(new Markup($"[green]No missing constraints found.[/]"))
             {
@@ -117,8 +95,8 @@ public static class SchemaTextReport
             };
             AnsiConsole.Write(panel);
         }
-
-        if (missingFieldsByRootType.Any())
+        
+        if (notAuthorizedTypes.NotAuthorizedFieldsByRootType.Any())
             AnsiConsole.Write(tree);
     }
 
@@ -209,37 +187,4 @@ public readonly record struct SchemaTextReportOptions(
     bool UniqueConstraints
 );
 
-public record Constraints(string[]? Roles, string[]? Policies)
-{
-    public bool IsAuthorized(
-        bool hasAuthorization,
-        AuthorizationDirective[] authorizationDirectives
-    )
-    {
-        if (!hasAuthorization || authorizationDirectives.All(ad => ad.IsEmpty()))
-        {
-            return true;
-        }
 
-        foreach (var authorizationDirective in authorizationDirectives)
-        {
-            if (Roles != null && Roles.Length != 0)
-            {
-                if (authorizationDirective.Roles.Any(r => Roles.Contains(r)))
-                {
-                    return true;
-                }
-            }
-
-            if (Policies != null && Policies.Length != 0)
-            {
-                if (Policies.Contains(authorizationDirective.Policy))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-}
