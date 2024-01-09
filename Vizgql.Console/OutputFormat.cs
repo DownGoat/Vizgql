@@ -3,5 +3,6 @@
 public enum OutputFormat
 {
     Ansi,
-    Csv
+    Csv,
+    Html
 }

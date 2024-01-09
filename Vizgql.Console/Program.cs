@@ -42,6 +42,9 @@ static async Task HandleOptionsAsync(
         case OutputFormat.Csv:
             CsvReport.Create(schemaType);
             break;
+        case OutputFormat.Html:
+            HtmlReport.Create(schemaType);
+            break;
         default:
             throw new ArgumentOutOfRangeException();
     }
