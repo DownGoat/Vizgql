@@ -64,6 +64,12 @@
       <None Update="schemas\policies\spelling-mistake-constraint.graphql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="schemas\policies\constraint-filter-test.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="schemas\roles\constraint-filter-test.graphql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
