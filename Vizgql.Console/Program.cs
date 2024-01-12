@@ -2,6 +2,7 @@
 using Vizgql.Console;
 using Vizgql.Core;
 using Vizgql.ReportBuilder;
+using Vizgql.ReportBuilder.Html.Models;
 
 static async Task HandleOptionsAsync(
     CommandLineOptions options,
@@ -43,7 +44,8 @@ static async Task HandleOptionsAsync(
             CsvReport.Create(schemaType);
             break;
         case OutputFormat.Html:
-            HtmlReport.Create(schemaType);
+            HtmlReport.Create(schemaType,
+                new HtmlReportComponentOptions(options.UniqueConstraints, options.Validations));
             break;
         default:
             throw new ArgumentOutOfRangeException();

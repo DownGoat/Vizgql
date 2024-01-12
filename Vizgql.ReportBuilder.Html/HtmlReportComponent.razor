@@ -5,11 +5,11 @@
     <meta charSet="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
     <title>Schema Report</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             font-family: 'Fira Sans', sans-serif;
@@ -45,11 +45,21 @@
                 
     </style>
 </head>
-    <body>
-        <TableComponent Model="@TableComponentModel"/>
-    </body>
+<body>
+<TableComponent Model="@Model.TableComponentModel"/>
+
+@if (Model.Options.ShowValidations && Model.ValidationsComponentModel != null)
+{
+    <ValidationsComponent Model="Model.ValidationsComponentModel"/>
+}
+
+@if (Model.Options.ShowUniqueConstraints && Model.UniqueConstraintsComponentModel != null)
+{
+    <UniqueConstraintsComponent Model="Model.UniqueConstraintsComponentModel"/>
+}
+</body>
 </html>
 
 @code {
-    [Parameter] public required TableComponentModel TableComponentModel { get; set; }
+    [Parameter] public required HtmlReportComponentModel Model { get; set; }
 }

@@ -9,17 +9,35 @@ namespace Vizgql.ReportBuilder;
 [SuppressMessage("Usage", "Spectre1000:Use AnsiConsole instead of System.Console")]
 public static class HtmlReport
 {
-    public static void Create(SchemaType schemaType)
+    public static void Create(SchemaType schemaType, HtmlReportComponentOptions options)
     {
         var schemaConstraints = new SchemaUniqueConstraints(schemaType);
 
         var tableModel = GetTableComponentModel(schemaType, schemaConstraints);
-
+        var uniqueConstraintsModel = GetUniqueConstraintsModel(schemaConstraints);
+        var validationsModel = GetValidationsModel(schemaType);
+        
         var result = new ComponentRenderer<HtmlReportComponent>()
-            .Set(c => c.TableComponentModel, tableModel)
+            .Set(c => c.Model, new HtmlReportComponentModel(
+                tableModel,
+                uniqueConstraintsModel,
+                validationsModel,
+                options
+                ))
             .Render();
 
         Console.WriteLine(result);
+    }
+
+    private static ValidationsComponentModel? GetValidationsModel(SchemaType schemaType)
+    {
+        var validations = schemaType.Validate();
+        return new ValidationsComponentModel(validations.ToArray());
+    }
+
+    private static UniqueConstraintsComponentModel? GetUniqueConstraintsModel(SchemaUniqueConstraints schemaConstraints)
+    {
+        return new UniqueConstraintsComponentModel(schemaConstraints.Roles, schemaConstraints.Policies);
     }
 
     private static TableComponentModel GetTableComponentModel(
