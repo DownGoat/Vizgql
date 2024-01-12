@@ -14,6 +14,7 @@
         :root {
             font-family: 'Fira Sans', sans-serif;
             background-color: #F8F6F0;
+            padding: 8px;
         }
         th {
             text-align: left;
@@ -31,6 +32,17 @@
         .row__constraint:nth-child(odd) {
             background-color: #efefef;
         }
+        
+        .root-type-row {
+            .row__constraint:nth-child(even) {
+                background-color: #efefef;
+            }
+                            
+            .row__constraint:nth-child(odd) {
+                background-color: unset;
+            }
+        }
+                
     </style>
 </head>
     <body>

@@ -33,28 +33,32 @@ public static class HtmlReport
         return new TableComponentModel(headerConstraints, tableRows.ToArray());
     }
 
-    private static IEnumerable<TableRow> GetTableRows(
+    private static IEnumerable<RootTypeGroup> GetTableRows(
         SchemaType schemaType,
         SchemaUniqueConstraints schemaConstraints
     )
     {
         foreach (var rootType in schemaType.RootTypes)
         {
-            yield return new TableRow(
+            yield return new RootTypeGroup(
                 rootType.Name,
                 rootType.HasAuthorization,
-                GetConstraintsForRow(rootType.Directives, schemaConstraints)
-            );
-
-            foreach (var field in rootType.Fields)
-            {
-                yield return new TableRow(
-                    $"{rootType.Name}.{field.Name}",
-                    field.HasAuthorization,
-                    GetConstraintsForRow(field.Directives, schemaConstraints)
+                GetConstraintsForRow(rootType.Directives, schemaConstraints),
+                GetRootTypeRows(rootType.Fields, schemaConstraints).ToArray()
                 );
-            }
         }
+    }
+
+    private static IEnumerable<TableRow> GetRootTypeRows(
+        IEnumerable<FieldType> fieldTypes,
+        SchemaUniqueConstraints schemaConstraints
+    )
+    {
+        return fieldTypes.Select(fieldType => new TableRow(
+            fieldType.Name,
+            fieldType.HasAuthorization,
+            GetConstraintsForRow(fieldType.Directives, schemaConstraints)
+        ));
     }
 
     private static string[] GetConstraintsForRow(
