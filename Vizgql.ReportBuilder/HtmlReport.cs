@@ -9,17 +9,35 @@ namespace Vizgql.ReportBuilder;
 [SuppressMessage("Usage", "Spectre1000:Use AnsiConsole instead of System.Console")]
 public static class HtmlReport
 {
-    public static void Create(SchemaType schemaType)
+    public static void Create(SchemaType schemaType, HtmlReportComponentOptions options)
     {
         var schemaConstraints = new SchemaUniqueConstraints(schemaType);
 
         var tableModel = GetTableComponentModel(schemaType, schemaConstraints);
-
+        var uniqueConstraintsModel = GetUniqueConstraintsModel(schemaConstraints);
+        var validationsModel = GetValidationsModel(schemaType);
+        
         var result = new ComponentRenderer<HtmlReportComponent>()
-            .Set(c => c.TableComponentModel, tableModel)
+            .Set(c => c.Model, new HtmlReportComponentModel(
+                tableModel,
+                uniqueConstraintsModel,
+                validationsModel,
+                options
+                ))
             .Render();
 
         Console.WriteLine(result);
+    }
+
+    private static ValidationsComponentModel? GetValidationsModel(SchemaType schemaType)
+    {
+        var validations = schemaType.Validate();
+        return new ValidationsComponentModel(validations.ToArray());
+    }
+
+    private static UniqueConstraintsComponentModel? GetUniqueConstraintsModel(SchemaUniqueConstraints schemaConstraints)
+    {
+        return new UniqueConstraintsComponentModel(schemaConstraints.Roles, schemaConstraints.Policies);
     }
 
     private static TableComponentModel GetTableComponentModel(
@@ -33,28 +51,32 @@ public static class HtmlReport
         return new TableComponentModel(headerConstraints, tableRows.ToArray());
     }
 
-    private static IEnumerable<TableRow> GetTableRows(
+    private static IEnumerable<RootTypeGroup> GetTableRows(
         SchemaType schemaType,
         SchemaUniqueConstraints schemaConstraints
     )
     {
         foreach (var rootType in schemaType.RootTypes)
         {
-            yield return new TableRow(
+            yield return new RootTypeGroup(
                 rootType.Name,
                 rootType.HasAuthorization,
-                GetConstraintsForRow(rootType.Directives, schemaConstraints)
-            );
-
-            foreach (var field in rootType.Fields)
-            {
-                yield return new TableRow(
-                    $"{rootType.Name}.{field.Name}",
-                    field.HasAuthorization,
-                    GetConstraintsForRow(field.Directives, schemaConstraints)
+                GetConstraintsForRow(rootType.Directives, schemaConstraints),
+                GetRootTypeRows(rootType.Fields, schemaConstraints).ToArray()
                 );
-            }
         }
+    }
+
+    private static IEnumerable<TableRow> GetRootTypeRows(
+        IEnumerable<FieldType> fieldTypes,
+        SchemaUniqueConstraints schemaConstraints
+    )
+    {
+        return fieldTypes.Select(fieldType => new TableRow(
+            fieldType.Name,
+            fieldType.HasAuthorization,
+            GetConstraintsForRow(fieldType.Directives, schemaConstraints)
+        ));
     }
 
     private static string[] GetConstraintsForRow(

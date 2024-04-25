@@ -1,43 +1,68 @@
 ﻿@using Vizgql.ReportBuilder.Html.Models
-
-<table>
-    <thead>
-    <tr>
-        <th class="header header__name">Name</th>
-        <th class="header header__hasAuthorization">Has Authorization</th>
-        @foreach (var header in Model.ConstraintHeaders)
-        {
-            <th class="header header__constraint">@header.Name</th>
-        }
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var row in Model.Rows)
-    {
-        <tr class="row">
-            <td class="row row__name">@row.Name</td>
-            <td class="row row__hasAuthorization">
-                @if (row.HasAuthorization)
-                {
-                    <CheckmarkIcon />
-                }
-                else
-                {
-                    <CrossIcon />
-                }
-            </td>
-
-            @foreach (var constraint in row.Constraints)
+<div class="table-overview-container">
+    <h2>Schema Overview</h2>
+    <p>The below table shows a overview of all the fields on the root types of the schema. The "Has Authorization" column shows if the field has a authorization attribute. Sub fields inherits authorizations from parents.</p>
+    <table>
+        <thead>
+        <tr>
+            <th class="header header__name">Root Type</th>
+            <th class="header header__name">Name</th>
+            <th class="header header__hasAuthorization">Has Authorization</th>
+            @foreach (var header in Model.ConstraintHeaders)
             {
-                <td class="row row__constraint">@constraint</td>
+                <th class="header header__constraint">@header.Name</th>
             }
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var group in Model.RootTypes)
+        {
+            <tr class="row root-type-row">
+                <td class="row row__name" rowspan="@(group.Rows.Length + 1)">@group.Name</td>
+                <td class="row row__name"></td>
+                <td class="row row__hasAuthorization">
+                    @if (group.HasAuthorization)
+                    {
+                        <CheckmarkIcon/>
+                    }
+                    else
+                    {
+                        <CrossIcon/>
+                    }
+                </td>
+
+                @foreach (var constraint in group.Constraints)
+                {
+                    <td class="row row__constraint">@constraint</td>
+                }
+            </tr>
+            @foreach (var row in group.Rows)
+            {
+                <tr class="row">
+                    <td class="row row__name">@row.Name</td>
+                    <td class="row row__hasAuthorization">
+                        @if (row.HasAuthorization)
+                        {
+                            <CheckmarkIcon/>
+                        }
+                        else
+                        {
+                            <CrossIcon/>
+                        }
+                    </td>
+
+                    @foreach (var constraint in row.Constraints)
+                    {
+                        <td class="row row__constraint">@constraint</td>
+                    }
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+</div>
 
 
 @code {
-    [Parameter]
-    public required TableComponentModel Model { get; set; }
+    [Parameter] public required TableComponentModel Model { get; set; }
 }

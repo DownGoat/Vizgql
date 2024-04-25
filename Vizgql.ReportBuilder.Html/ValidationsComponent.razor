@@ -1,0 +1,16 @@
+﻿@using Vizgql.ReportBuilder.Html.Models
+
+<div class="validations-container">
+    <h2>Validations</h2>
+    <p>Below different validation errors are listed out. They might need your attention</p>
+    <ul>
+        @foreach (var validation in Model.Validations)
+        {
+            <li>@validation.Name - @validation.Type</li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter] public required ValidationsComponentModel Model { get; set; }
+}

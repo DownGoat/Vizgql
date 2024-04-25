@@ -1,0 +1,35 @@
+﻿@using Vizgql.ReportBuilder.Html.Models
+
+<div class="unique-constraints-container">
+    <h2>Unique Constraints</h2>
+    <p>Below all the unique constraints, roles or policies are listed out.</p>
+    @if (Model.Roles.Length != 0)
+    {
+        <div class="unique-constraints-group">
+            <h3>Unique Roles</h3>
+            <ul>
+                @foreach (var role in Model.Roles)
+                {
+                    <li>@role</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Model.Policies.Length != 0)
+    {
+        <div class="unique-constraints-group">
+            <h3>Unique Policies</h3>
+            <ul>
+                @foreach (var policy in Model.Policies)
+                {
+                    <li>@policy</li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public required UniqueConstraintsComponentModel Model { get; set; }
+}
