@@ -4,10 +4,10 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyVersion>0.0.7</AssemblyVersion>
-        <FileVersion>0.0.7</FileVersion>
+        <AssemblyVersion>0.0.8</AssemblyVersion>
+        <FileVersion>0.0.8</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>0.0.7</Version>
+        <Version>0.0.8</Version>
         <Title>Vizgql.Core</Title>
         <Description>The goal of this project is to have a tool for vizualizing and testing
 authorization for GraphQL schemas. It is not always clear and easy to vizualize
@@ -16,7 +16,7 @@ projects aims to give you tools to automatically test this, and genrate vizualis
         <PackageProjectUrl>https://github.com/DownGoat/Vizgql</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DownGoat/Vizgql</RepositoryUrl>
         <PackageTags>console;shell;terminal;testing;security;graphql</PackageTags>
-        <PackageReleaseNotes>html format improvements</PackageReleaseNotes>
+        <PackageReleaseNotes>upgrading dependecies</PackageReleaseNotes>
         <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
      </PropertyGroup>
